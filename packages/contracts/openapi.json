@@ -86,8 +86,27 @@
           "Scans & Detection"
         ],
         "summary": "Create Scan",
-        "description": "Creates a scan job and returns a scan_id.",
+        "description": "Submits a message, link, phone, or file for multi-module scan analysis.\nExecutes async parallel detection, computes explainable risk scoring, and returns Trust Passport.",
         "operationId": "create_scan_api_v1_scans_post",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "en",
+              "title": "Lang"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -170,7 +189,7 @@
           "Scans & Detection"
         ],
         "summary": "Stream Scan Events",
-        "description": "SSE endpoint streaming progressive module findings to the 3D frontend.",
+        "description": "Server-Sent Events (SSE) endpoint providing real-time streaming of module progress\nand partial findings as they complete.",
         "operationId": "stream_scan_events_api_v1_scans__scan_id__stream_get",
         "parameters": [
           {

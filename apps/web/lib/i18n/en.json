@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "product": "Product",
+    "modules": "Modules",
+    "howItWorks": "How It Works",
+    "research": "Research",
+    "learn": "Scam Library",
+    "safety": "Safety & Privacy",
+    "docs": "Docs",
+    "about": "About",
+    "contact": "Contact",
+    "scanNow": "Check a Message"
+  },
+  "hero": {
+    "headline": "Know if it's a scam before you reply.",
+    "subline": "Paste a Facebook or Telegram message, link, profile, or file. ScamShield AI exposes the manipulation tactics and explains exactly why it's risky.",
+    "cta": "Analyze Message",
+    "sample1": "Marketplace Advance Fraud",
+    "sample2": "KYC Phishing Link",
+    "sample3": "Crypto Airdrop Trap",
+    "disclaimer": "Free and open source. Zero message retention by default."
+  },
+  "stats": {
+    "stat1Value": "1.1M+",
+    "stat1Label": "Cyber complaints registered on 1930 Portal (2023-24)",
+    "stat1Source": "National Cyber Crime Reporting Portal (MHA)",
+    "stat2Value": "69%",
+    "stat2Label": "Attributed to social engineering & fake buyer UPI traps",
+    "stat2Source": "RBI Annual Report on Banking Fraud Trends",
+    "stat3Value": "4",
+    "stat3Label": "Peer-reviewed research architectures synthesized",
+    "stat3Source": "Literature Survey (§1-§4)"
+  },
+  "actions": {
+    "reportHelpline": "National Cyber Helpline: Dial 1930",
+    "portalUrl": "cybercrime.gov.in"
+  }
+}

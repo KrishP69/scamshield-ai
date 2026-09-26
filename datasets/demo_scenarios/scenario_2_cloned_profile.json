@@ -1,0 +1,24 @@
+{
+  "scenario_id": "scenario_2",
+  "name": "Cloned Profile / Friend Impersonation",
+  "platform": "facebook",
+  "input_type": "text",
+  "input_data": {
+    "text": "Hi dear, lost my old phone in a taxi today so this is my new temporary WhatsApp number. My mother was suddenly admitted to the ICU at Lilavati Hospital and my cards are blocked. Can you please quickly send Rs. 5,000 to this UPI ID: hospital.emergency99@okaxis? I will return it by tomorrow evening as soon as my sister arrives. Please don't call, I'm inside the ward.",
+    "phone": "+919820099999",
+    "photo_url": "/demo/cloned_profile.jpg"
+  },
+  "expected_passport": {
+    "risk_score_min": 70,
+    "risk_score_max": 95,
+    "level": "CRITICAL",
+    "scam_type": "cloned_friend_account",
+    "expected_tactics": [
+      "impersonation_of_known_person",
+      "emotional_pressure",
+      "urgency",
+      "secrecy_isolation"
+    ],
+    "expected_action": "Call your friend directly on their known original number or speak with family before sending funds."
+  }
+}

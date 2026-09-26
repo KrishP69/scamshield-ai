@@ -1,0 +1,24 @@
+{
+  "scenario_id": "scenario_4",
+  "name": "Telegram Fake Crypto Airdrop & Investment Fraud",
+  "platform": "telegram",
+  "input_type": "text",
+  "input_data": {
+    "text": "🎉 BINANCE OFFICIAL 10TH ANNIVERSARY AIRDROP 🎉\nSend 0.5 ETH to 10 ETH to the official smart contract pool: 0x71C95911E9a5D330f4d621842EC243EE1343292e and immediately receive 3X back within 20 minutes! Guaranteed 300% instant returns. Connect your wallet now: https://t.me/BinanceGiftAirdropBot or enter your 12-word seed phrase to claim your VIP allocation. Admin will never DM first.",
+    "wallet_address": "0x71C95911E9a5D330f4d621842EC243EE1343292e",
+    "url": "https://t.me/BinanceGiftAirdropBot"
+  },
+  "expected_passport": {
+    "risk_score_min": 90,
+    "risk_score_max": 100,
+    "level": "CRITICAL",
+    "scam_type": "investment_crypto",
+    "expected_tactics": [
+      "too_good_to_be_true",
+      "credential_request",
+      "fake_authority",
+      "urgency"
+    ],
+    "expected_action": "Never disclose your seed phrase or private key. Any scheme promising 'send X to receive 2X/3X' is an outright scam."
+  }
+}

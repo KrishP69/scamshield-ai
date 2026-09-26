@@ -1,0 +1,23 @@
+{
+  "scenario_id": "scenario_3",
+  "name": "Look-Alike Phishing Link (Bank KYC Update)",
+  "platform": "telegram",
+  "input_type": "text",
+  "input_data": {
+    "text": "Dear Customer, Your SBI Yono NetBanking account will be permanently deactivated today due to incomplete PAN KYC. Immediately update your KYC details to restore transactions: http://sbi-yono-kyc-update.xyz/login. Do not ignore or your funds will be seized.",
+    "url": "http://sbi-yono-kyc-update.xyz/login"
+  },
+  "expected_passport": {
+    "risk_score_min": 90,
+    "risk_score_max": 100,
+    "level": "CRITICAL",
+    "scam_type": "kyc_bank_upi",
+    "expected_tactics": [
+      "urgency",
+      "threat_or_fear",
+      "fake_authority",
+      "credential_request"
+    ],
+    "expected_action": "Do not open the link or enter banking passwords/OTP. Banks never send KYC update links via SMS or Telegram."
+  }
+}

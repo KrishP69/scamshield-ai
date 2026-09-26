@@ -1,0 +1,17 @@
+{
+  "scenario_id": "control_1",
+  "name": "Genuine Marketplace Seller Communication",
+  "platform": "facebook",
+  "input_type": "text",
+  "input_data": {
+    "text": "Hi! Yes, the bicycle is still available. You are welcome to come test ride it this Saturday in Bandra West between 4 PM and 7 PM. Cash or UPI on collection in person is completely fine with me. Let me know if that timing works for you!"
+  },
+  "expected_passport": {
+    "risk_score_min": 0,
+    "risk_score_max": 20,
+    "level": "LOW",
+    "scam_type": "legit",
+    "expected_tactics": [],
+    "expected_action": "No red flags found in the checks run. Proceed normally with standard precautions."
+  }
+}

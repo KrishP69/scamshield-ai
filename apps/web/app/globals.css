@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0F1633;
+  --paper: #F3F5FA;
+  --ultramarine: #2F45FF;
+  --signal: #FF5B4A;
+  --verify: #1FB58F;
+  --caution: #F5A524;
+  
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --border: rgba(15, 22, 51, 0.1);
+  --card: #FFFFFF;
+}
+
+.dark {
+  --background: #090D1F;
+  --foreground: #F3F5FA;
+  --border: rgba(243, 245, 250, 0.12);
+  --card: #0F1633;
+}
+
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-bricolage), sans-serif;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 22, 51, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Accessible focus rings */
+*:focus-visible {
+  outline: 2px solid var(--ultramarine);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

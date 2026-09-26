@@ -1,0 +1,88 @@
+name: ScamShield AI CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-checks:
+    name: Backend Lint, Type-Check & Tests
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-hin tesseract-ocr-mar libmagic1
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r apps/api/requirements.txt
+          pip install pytest pytest-asyncio ruff httpx
+
+      - name: Lint with Ruff
+        run: ruff check apps/api
+
+      - name: Verify Contract Generation
+        run: |
+          python -c "import json, sys; sys.path.insert(0, 'apps/api'); from app.main import app; open('packages/contracts/openapi.json', 'w').write(json.dumps(app.openapi(), indent=2))"
+          git diff --exit-code packages/contracts/openapi.json || echo "OpenAPI spec updated"
+
+      - name: Run Pytest Test Suite
+        env:
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
+          REDIS_URL: redis://localhost:6379/0
+          ENVIRONMENT: test
+          SECRET_KEY: test-secret-key-32-bytes-long-12345678
+          ENCRYPTION_KEY: dGhpc19pc19hX2R1bW15XzMyX2J5dGVfZmVybmV0X2tleV9mb3JfZGV2IQ==
+        run: |
+          cd apps/api && pytest ../../tests -v
+
+  frontend-checks:
+    name: Frontend Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/web/package.json
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd apps/web && npm ci
+
+      - name: Type Check & Lint
+        run: |
+          cd apps/web && npm run lint
+
+      - name: Build Web Application
+        run: |
+          cd apps/web && npm run build

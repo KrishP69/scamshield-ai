@@ -1,0 +1,17 @@
+{
+  "scenario_id": "control_2",
+  "name": "Legitimate Bank Transactional Alert",
+  "platform": "unknown",
+  "input_type": "text",
+  "input_data": {
+    "text": "Your HDFC Bank account ending in 4102 was debited by INR 450.00 at STARBUCKS MUMBAI on 26-SEP-26. Available balance: INR 18,240.50. If you did not make this transaction, call 18002026161 or SMS BLOCK to 5676712."
+  },
+  "expected_passport": {
+    "risk_score_min": 0,
+    "risk_score_max": 20,
+    "level": "LOW",
+    "scam_type": "legit",
+    "expected_tactics": [],
+    "expected_action": "Standard transactional alert. Verify your transaction records."
+  }
+}

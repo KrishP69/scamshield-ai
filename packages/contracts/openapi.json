@@ -1,0 +1,1782 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ScamShield AI",
+    "description": "Full-stack AI-powered scam threat detection & explainable risk-scoring API for Facebook and Telegram",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Health & Status"
+        ],
+        "summary": "Liveness",
+        "description": "Basic liveness check.",
+        "operationId": "liveness_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Liveness Api V1 Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "tags": [
+          "Health & Status"
+        ],
+        "summary": "Readiness",
+        "description": "Readiness probe checking storage, config, and system status.",
+        "operationId": "readiness_api_v1_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Readiness Api V1 Ready Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/status": {
+      "get": {
+        "tags": [
+          "Health & Status"
+        ],
+        "summary": "Adapter Status",
+        "description": "Detailed operational status of threat-intelligence adapters and detection modules.",
+        "operationId": "adapter_status_api_v1_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Adapter Status Api V1 Status Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans": {
+      "post": {
+        "tags": [
+          "Scans & Detection"
+        ],
+        "summary": "Create Scan",
+        "description": "Creates a scan job and returns a scan_id.",
+        "operationId": "create_scan_api_v1_scans_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_scan_api_v1_scans_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{scan_id}": {
+      "get": {
+        "tags": [
+          "Scans & Detection"
+        ],
+        "summary": "Get Scan Report",
+        "description": "Retrieves the full Trust Passport for a completed scan.",
+        "operationId": "get_scan_report_api_v1_scans__scan_id__get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustPassport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{scan_id}/stream": {
+      "get": {
+        "tags": [
+          "Scans & Detection"
+        ],
+        "summary": "Stream Scan Events",
+        "description": "SSE endpoint streaming progressive module findings to the 3D frontend.",
+        "operationId": "stream_scan_events_api_v1_scans__scan_id__stream_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scans/quick": {
+      "post": {
+        "tags": [
+          "Scans & Detection"
+        ],
+        "summary": "Quick Scan",
+        "description": "Lightweight endpoint for browser extension and Android background shield.",
+        "operationId": "quick_scan_api_v1_scans_quick_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickScanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickScanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/signup": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Signup",
+        "operationId": "signup_api_v1_auth_signup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Refresh Token",
+        "operationId": "refresh_token_api_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Logout Api V1 Auth Logout Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history": {
+      "get": {
+        "tags": [
+          "Scan History"
+        ],
+        "summary": "List History",
+        "description": "Lists past scans for the authenticated user (only scans where store_history was enabled).",
+        "operationId": "list_history_api_v1_history_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 10,
+              "title": "Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Scan History"
+        ],
+        "summary": "Delete All History",
+        "description": "Deletes all stored scan records and account history for the user (GDPR/DPDP compliance).",
+        "operationId": "delete_all_history_api_v1_history_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete All History Api V1 History Delete"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history/{scan_id}": {
+      "delete": {
+        "tags": [
+          "Scan History"
+        ],
+        "summary": "Delete History Item",
+        "description": "Permanently deletes a scan record and any stored encrypted content.",
+        "operationId": "delete_history_item_api_v1_history__scan_id__delete",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete History Item Api V1 History  Scan Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{scan_id}/share": {
+      "post": {
+        "tags": [
+          "Reports & Sharing"
+        ],
+        "summary": "Share Report",
+        "description": "Generates an expiring public token to share a Trust Passport.",
+        "operationId": "share_report_api_v1_reports__scan_id__share_post",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareReportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/share/{token}": {
+      "get": {
+        "tags": [
+          "Reports & Sharing"
+        ],
+        "summary": "Get Shared Report",
+        "description": "Retrieves a public shared report by its token.",
+        "operationId": "get_shared_report_api_v1_reports_share__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Shared Report Api V1 Reports Share  Token  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/community/report": {
+      "post": {
+        "tags": [
+          "Community Threat Reports"
+        ],
+        "summary": "Submit Community Report",
+        "description": "Submits a threat indicator report to the community reputation database.",
+        "operationId": "submit_community_report_api_v1_community_report_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommunityReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/metrics": {
+      "get": {
+        "tags": [
+          "Admin & Moderation"
+        ],
+        "summary": "Get System Metrics",
+        "description": "Returns platform-wide operational and threat statistics.",
+        "operationId": "get_system_metrics_api_v1_admin_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMetrics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/labels": {
+      "get": {
+        "tags": [
+          "Admin & Moderation"
+        ],
+        "summary": "List Label Queue",
+        "description": "Returns items queued for human review in the active learning loop.",
+        "operationId": "list_label_queue_api_v1_admin_labels_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LabelQueueItem"
+                  },
+                  "type": "array",
+                  "title": "Response List Label Queue Api V1 Admin Labels Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/labels/{item_id}/review": {
+      "post": {
+        "tags": [
+          "Admin & Moderation"
+        ],
+        "summary": "Review Label",
+        "description": "Submits human verification or correction for a flagged scan.",
+        "operationId": "review_label_api_v1_admin_labels__item_id__review_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewLabelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Review Label Api V1 Admin Labels  Item Id  Review Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/models": {
+      "get": {
+        "tags": [
+          "Admin & Moderation"
+        ],
+        "summary": "List Model Status",
+        "description": "Returns status and version metadata for loaded ML artifacts.",
+        "operationId": "list_model_status_api_v1_admin_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Model Status Api V1 Admin Models Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdminMetrics": {
+        "properties": {
+          "total_scans": {
+            "type": "integer",
+            "title": "Total Scans"
+          },
+          "scans_last_24h": {
+            "type": "integer",
+            "title": "Scans Last 24H"
+          },
+          "threat_breakdown": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Threat Breakdown"
+          },
+          "avg_latency_ms": {
+            "type": "number",
+            "title": "Avg Latency Ms"
+          },
+          "adapter_health": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Adapter Health"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_scans",
+          "scans_last_24h",
+          "threat_breakdown",
+          "avg_latency_ms",
+          "adapter_health"
+        ],
+        "title": "AdminMetrics"
+      },
+      "Body_create_scan_api_v1_scans_post": {
+        "properties": {
+          "payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScanCreateRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "text_form": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Form"
+          },
+          "platform_form": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform Form"
+          }
+        },
+        "type": "object",
+        "title": "Body_create_scan_api_v1_scans_post"
+      },
+      "CommunityReportCreate": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "phone, wallet, url, or username"
+          },
+          "indicator_value": {
+            "type": "string",
+            "title": "Indicator Value",
+            "description": "The indicator value being reported"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform",
+            "default": "unknown"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "indicator_value"
+        ],
+        "title": "CommunityReportCreate"
+      },
+      "CommunityReportResponse": {
+        "properties": {
+          "reputation_id": {
+            "type": "string",
+            "title": "Reputation Id"
+          },
+          "report_count": {
+            "type": "integer",
+            "title": "Report Count"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reputation_id",
+          "report_count",
+          "status",
+          "message"
+        ],
+        "title": "CommunityReportResponse"
+      },
+      "Evidence": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Unique machine-readable reason identifier, e.g. URGENCY_LANGUAGE"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/SeverityLevel",
+            "description": "Severity level: low, medium, high, or critical"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Short plain-English title"
+          },
+          "plain_text": {
+            "type": "string",
+            "title": "Plain Text",
+            "description": "Clear explanation of the detected risk factor"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ScanSource",
+            "description": "Origin of this evidence finding"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Span",
+            "description": "Start and end character offsets in original text for inline highlighting"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "severity",
+          "title",
+          "plain_text",
+          "source"
+        ],
+        "title": "Evidence"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HistoryItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "input_type": {
+            "type": "string",
+            "title": "Input Type"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "risk_score": {
+            "type": "integer",
+            "title": "Risk Score"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "scam_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scam Type"
+          },
+          "passport": {
+            "$ref": "#/components/schemas/TrustPassport"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "input_type",
+          "platform",
+          "risk_score",
+          "level",
+          "scam_type",
+          "passport",
+          "created_at"
+        ],
+        "title": "HistoryItem"
+      },
+      "HistoryListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ],
+        "title": "HistoryListResponse"
+      },
+      "IndicatorSummary": {
+        "properties": {
+          "urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Urls"
+          },
+          "wallets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Wallets"
+          },
+          "phones": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Phones"
+          },
+          "usernames": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Usernames"
+          },
+          "files": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "title": "IndicatorSummary"
+      },
+      "LabelQueueItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "scan_id": {
+            "type": "string",
+            "title": "Scan Id"
+          },
+          "proposed_label": {
+            "type": "string",
+            "title": "Proposed Label"
+          },
+          "reviewer_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Label"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scan_id",
+          "proposed_label",
+          "created_at"
+        ],
+        "title": "LabelQueueItem"
+      },
+      "ModuleStatus": {
+        "type": "string",
+        "enum": [
+          "done",
+          "failed",
+          "skipped",
+          "not_checked"
+        ],
+        "title": "ModuleStatus"
+      },
+      "ModuleSummary": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Module identifier (e.g. scam_guardian, link_scanner)"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ModuleStatus",
+            "description": "Execution status: done, failed, skipped, not_checked"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "Risk score output"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "Module confidence"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "model, rule, external_api, or offline_fallback"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms",
+            "description": "Execution time in ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "status"
+        ],
+        "title": "ModuleSummary"
+      },
+      "PlatformType": {
+        "type": "string",
+        "enum": [
+          "facebook",
+          "telegram",
+          "whatsapp",
+          "unknown"
+        ],
+        "title": "PlatformType"
+      },
+      "QuickScanRequest": {
+        "properties": {
+          "url_hashes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Url Hashes",
+            "description": "List of SHA-256 URL prefixes for quick lookup"
+          },
+          "text_snippet": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Snippet",
+            "description": "Short text snippet for client-side quick check"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/PlatformType",
+            "default": "unknown"
+          }
+        },
+        "type": "object",
+        "title": "QuickScanRequest"
+      },
+      "QuickScanResponse": {
+        "properties": {
+          "is_flagged": {
+            "type": "boolean",
+            "title": "Is Flagged"
+          },
+          "risk_hint": {
+            "type": "string",
+            "title": "Risk Hint"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_flagged",
+          "risk_hint"
+        ],
+        "title": "QuickScanResponse"
+      },
+      "ReviewLabelRequest": {
+        "properties": {
+          "reviewer_label": {
+            "type": "string",
+            "title": "Reviewer Label"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewer_label"
+        ],
+        "title": "ReviewLabelRequest"
+      },
+      "RiskLevel": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "CAUTION",
+          "HIGH",
+          "CRITICAL",
+          "INCONCLUSIVE"
+        ],
+        "title": "RiskLevel"
+      },
+      "ScanCreateRequest": {
+        "properties": {
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text",
+            "description": "Raw message text to inspect"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/PlatformType",
+            "description": "Source platform (facebook, telegram, etc.)",
+            "default": "unknown"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "Optional link to inspect"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "Optional phone number to check"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "description": "Optional profile handle or username"
+          },
+          "wallet_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wallet Address",
+            "description": "Optional crypto wallet address"
+          },
+          "store_history": {
+            "type": "boolean",
+            "title": "Store History",
+            "description": "Explicit opt-in to store this scan in history",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "ScanCreateRequest"
+      },
+      "ScanResponse": {
+        "properties": {
+          "scan_id": {
+            "type": "string",
+            "title": "Scan Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "queued, running, completed, or failed"
+          },
+          "passport": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TrustPassport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "scan_id",
+          "status"
+        ],
+        "title": "ScanResponse"
+      },
+      "ScanSource": {
+        "type": "string",
+        "enum": [
+          "model",
+          "rule",
+          "external_api",
+          "offline_fallback"
+        ],
+        "title": "ScanSource"
+      },
+      "SeverityLevel": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "title": "SeverityLevel"
+      },
+      "ShareReportRequest": {
+        "properties": {
+          "expires_in_hours": {
+            "type": "integer",
+            "maximum": 720.0,
+            "minimum": 1.0,
+            "title": "Expires In Hours",
+            "default": 72
+          }
+        },
+        "type": "object",
+        "title": "ShareReportRequest"
+      },
+      "ShareReportResponse": {
+        "properties": {
+          "share_token": {
+            "type": "string",
+            "title": "Share Token"
+          },
+          "share_url": {
+            "type": "string",
+            "title": "Share Url"
+          },
+          "expires_at": {
+            "type": "string",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "share_token",
+          "share_url",
+          "expires_at"
+        ],
+        "title": "ShareReportResponse"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token"
+        ],
+        "title": "Token"
+      },
+      "TrustPassport": {
+        "properties": {
+          "scan_id": {
+            "type": "string",
+            "title": "Scan Id",
+            "description": "Unique scan execution identifier"
+          },
+          "risk_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "description": "Calibrated risk index (0-100)"
+          },
+          "level": {
+            "$ref": "#/components/schemas/RiskLevel",
+            "description": "LOW, CAUTION, HIGH, CRITICAL, or INCONCLUSIVE"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "description": "Composite confidence level"
+          },
+          "scam_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scam Type",
+            "description": "Primary scam typology (e.g. marketplace_advance_payment)"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "type": "array",
+            "title": "Reasons",
+            "description": "Top 3 to 6 sorted explainable evidence items with highlights"
+          },
+          "modules": {
+            "items": {
+              "$ref": "#/components/schemas/ModuleSummary"
+            },
+            "type": "array",
+            "title": "Modules",
+            "description": "Summary of each module's status and finding"
+          },
+          "indicators": {
+            "$ref": "#/components/schemas/IndicatorSummary",
+            "description": "Extracted indicators"
+          },
+          "actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Actions",
+            "description": "Recommended defensive action items (e.g. call 1930)"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "description": "Statutory legal and safety disclaimer",
+            "default": "ScamShield AI provides automated risk guidance, not legal or financial advice. In case of financial fraud, dial 1930 or visit https://cybercrime.gov.in."
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "ISO-8601 creation timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scan_id",
+          "risk_score",
+          "level",
+          "confidence",
+          "reasons",
+          "modules",
+          "actions",
+          "created_at"
+        ],
+        "title": "TrustPassport"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password"
+          },
+          "store_history": {
+            "type": "boolean",
+            "title": "Store History",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserCreate"
+      },
+      "UserLogin": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserLogin"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "store_history": {
+            "type": "boolean",
+            "title": "Store History"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "role",
+          "store_history",
+          "created_at"
+        ],
+        "title": "UserResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

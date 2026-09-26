@@ -1,0 +1,30 @@
+{
+  "scenario_id": "scenario_5",
+  "name": "Malicious Banking Utility APK",
+  "platform": "telegram",
+  "input_type": "file",
+  "input_data": {
+    "file_name": "SBI_Rewards_Installer.apk",
+    "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+    "package_name": "com.sbi.rewards.update",
+    "permissions": [
+      "android.permission.BIND_ACCESSIBILITY_SERVICE",
+      "android.permission.READ_SMS",
+      "android.permission.RECEIVE_SMS",
+      "android.permission.INTERNET",
+      "android.permission.SYSTEM_ALERT_WINDOW",
+      "android.permission.REQUEST_INSTALL_PACKAGES"
+    ]
+  },
+  "expected_passport": {
+    "risk_score_min": 85,
+    "risk_score_max": 100,
+    "level": "CRITICAL",
+    "scam_type": "suspicious_apk",
+    "expected_tactics": [
+      "credential_request",
+      "fake_authority"
+    ],
+    "expected_action": "Do not install or open this APK file. It requests dangerous SMS interception and screen accessibility permissions."
+  }
+}

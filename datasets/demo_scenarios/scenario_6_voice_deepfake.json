@@ -1,0 +1,24 @@
+{
+  "scenario_id": "scenario_6",
+  "name": "Deepfake Voice Note Kidnapping / Emergency Impersonation",
+  "platform": "telegram",
+  "input_type": "audio",
+  "input_data": {
+    "file_name": "urgent_voice_message.ogg",
+    "transcript": "Mom please help me, I have been detained by police officers in Delhi after an accident. They are demanding fifty thousand rupees right now to let me go or they will register an FIR and lock me up. Please transfer it to this inspector's number immediately and don't tell Dad.",
+    "mock_spoof_prob": 0.88
+  },
+  "expected_passport": {
+    "risk_score_min": 75,
+    "risk_score_max": 95,
+    "level": "CRITICAL",
+    "scam_type": "tech_support_impersonation",
+    "expected_tactics": [
+      "threat_or_fear",
+      "emotional_pressure",
+      "urgency",
+      "secrecy_isolation"
+    ],
+    "expected_action": "Voice synthesis artefacts detected. Hang up and contact your relative directly or call local police control room 112."
+  }
+}

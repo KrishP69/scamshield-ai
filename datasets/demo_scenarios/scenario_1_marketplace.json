@@ -1,0 +1,21 @@
+{
+  "scenario_id": "scenario_1",
+  "name": "Facebook Marketplace Advance-Payment Fraud",
+  "platform": "facebook",
+  "input_type": "text",
+  "input_data": {
+    "text": "Hello, I am interested in buying your sofa set. I am currently posted in the Indian Army at Pune Cantonment so I cannot come in person. I will send a military truck to pick it up tomorrow morning. Please transfer Rs. 2,000 as refundable gate pass security deposit via UPI to verify your account, and I will immediately send the full payment of Rs. 25,000. Urgently send it within 15 minutes to confirm booking."
+  },
+  "expected_passport": {
+    "risk_score_min": 75,
+    "risk_score_max": 100,
+    "level": "CRITICAL",
+    "scam_type": "marketplace_advance_payment",
+    "expected_tactics": [
+      "advance_payment_request",
+      "fake_authority",
+      "urgency"
+    ],
+    "expected_action": "Do not transfer money. Legitimate buyers never ask sellers to pay an advance or gate pass fee."
+  }
+}

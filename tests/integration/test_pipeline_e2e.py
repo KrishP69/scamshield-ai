@@ -83,3 +83,105 @@ async def test_sse_stream_events(client):
     assert "data:" in body_text
     assert "risk_score" in body_text
     assert "passport" in body_text
+
+
+@pytest.mark.asyncio
+async def test_scenario_2_cloned_profile(client):
+    """End-to-End Test: Demo Scenario 2 — Cloned Profile & Friend Impersonation."""
+    fixture = load_fixture("scenario_2_cloned_profile.json")
+    payload = {
+        "text": fixture["input_data"]["text"],
+        "platform": fixture["platform"],
+        "phone": fixture["input_data"].get("phone"),
+        "photo_phash": "8f8f8e8e1c1c1c1c",
+    }
+    response = await client.post("/api/v1/scans", json=payload)
+    assert response.status_code == 202
+    passport = response.json()["passport"]
+
+    assert passport["risk_score"] >= fixture["expected_passport"]["risk_score_min"]
+    assert passport["level"] in ("HIGH", "CRITICAL")
+    assert passport["scam_type"] in ("cloned_friend_account", "marketplace_advance_payment")
+
+    reason_codes = [r["code"] for r in passport["reasons"]]
+    assert "EMOTIONAL_PRESSURE" in reason_codes or "IMPERSONATION_OF_KNOWN_PERSON" in reason_codes
+    assert any("RECYCLED_SCAM_PHOTO" in r["code"] for r in passport["reasons"])
+
+
+@pytest.mark.asyncio
+async def test_scenario_3_phishing_link(client):
+    """End-to-End Test: Demo Scenario 3 — Look-Alike Phishing Domain."""
+    fixture = load_fixture("scenario_3_phishing_link.json")
+    payload = {
+        "text": fixture["input_data"]["text"],
+        "platform": fixture["platform"],
+        "url": fixture["input_data"]["url"],
+    }
+    response = await client.post("/api/v1/scans", json=payload)
+    assert response.status_code == 202
+    passport = response.json()["passport"]
+
+    assert passport["risk_score"] >= fixture["expected_passport"]["risk_score_min"]
+    assert passport["level"] == "CRITICAL"
+    reason_codes = [r["code"] for r in passport["reasons"]]
+    assert any("LOOKALIKE_BRAND_DOMAIN" in c or "CONFIRMED_MALICIOUS_URL" in c or "HIGH_RISK_TLD" in c for c in reason_codes)
+    assert len(passport["indicators"]["urls"]) >= 1
+
+
+@pytest.mark.asyncio
+async def test_scenario_4_telegram_crypto(client):
+    """End-to-End Test: Demo Scenario 4 — Telegram Fake Crypto Giveaway / Seed Phrase."""
+    fixture = load_fixture("scenario_4_telegram_crypto.json")
+    payload = {
+        "text": fixture["input_data"]["text"],
+        "platform": fixture["platform"],
+        "wallet_address": fixture["input_data"]["wallet_address"],
+    }
+    response = await client.post("/api/v1/scans", json=payload)
+    assert response.status_code == 202
+    passport = response.json()["passport"]
+
+    assert passport["risk_score"] >= fixture["expected_passport"]["risk_score_min"]
+    assert passport["level"] == "CRITICAL"
+    reason_codes = [r["code"] for r in passport["reasons"]]
+    assert any("SEED_PHRASE" in c or "KNOWN_SCAM_WALLET" in c or "MULTIPLIER" in c or "TOO_GOOD_TO_BE_TRUE" in c for c in reason_codes)
+    assert len(passport["indicators"]["wallets"]) >= 1
+
+
+@pytest.mark.asyncio
+async def test_scenario_5_suspicious_apk(client):
+    """End-to-End Test: Demo Scenario 5 — Malicious Banking APK Permissions."""
+    fixture = load_fixture("scenario_5_suspicious_apk.json")
+    payload = {
+        "text": "Please install this SBI rewards update apk",
+        "platform": fixture["platform"],
+        "file_name": fixture["input_data"]["file_name"],
+        "sha256": fixture["input_data"]["sha256"],
+        "package_name": fixture["input_data"]["package_name"],
+        "permissions": fixture["input_data"]["permissions"],
+    }
+    response = await client.post("/api/v1/scans", json=payload)
+    assert response.status_code == 202
+    passport = response.json()["passport"]
+
+    assert passport["risk_score"] >= fixture["expected_passport"]["risk_score_min"]
+    assert passport["level"] == "CRITICAL"
+    reason_codes = [r["code"] for r in passport["reasons"]]
+    assert any("VIRUSTOTAL_MALWARE_HIT" in c or "DANGEROUS_PERMISSIONS_COMBO" in c or "PACKAGE_NAME" in c for c in reason_codes)
+
+
+@pytest.mark.asyncio
+async def test_control_2_bank_otp(client):
+    """End-to-End Test: Safe Control 2 — Authentic Bank Transaction Alert."""
+    fixture = load_fixture("control_2_bank_otp.json")
+    payload = {
+        "text": fixture["input_data"]["text"],
+        "platform": fixture["platform"],
+    }
+    response = await client.post("/api/v1/scans", json=payload)
+    assert response.status_code == 202
+    passport = response.json()["passport"]
+
+    assert passport["risk_score"] <= fixture["expected_passport"]["risk_score_max"]
+    assert passport["level"] == "LOW"
+    assert passport["scam_type"] == "legit"

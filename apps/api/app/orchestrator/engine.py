@@ -3,6 +3,10 @@ import time
 from typing import Any, Dict, List, Optional
 from app.core.logging import logger
 from app.modules.base import DetectionModule, ScanContext
+from app.modules.crypto_detector.service import crypto_detector
+from app.modules.file_scanner.service import file_scanner
+from app.modules.link_scanner.service import link_scanner
+from app.modules.reverse_search.service import reverse_search
 from app.modules.scam_guardian.guardian import scam_guardian
 from app.orchestrator.events import event_broadcaster
 from app.preprocess.clean import clean_text
@@ -19,8 +23,14 @@ class ScanOrchestrator:
     """Coordinates input preprocessing, parallel module fan-out, SSE streaming, and scoring fusion."""
 
     def __init__(self):
-        # Active modules in Phase 1 (additional modules register in Phase 2)
-        self.modules: List[DetectionModule] = [scam_guardian]
+        # All detection modules registered and active in Phase 2
+        self.modules: List[DetectionModule] = [
+            scam_guardian,
+            link_scanner,
+            crypto_detector,
+            file_scanner,
+            reverse_search,
+        ]
 
     async def execute_scan(
         self,
@@ -31,6 +41,7 @@ class ScanOrchestrator:
         file_name: Optional[str] = None,
         file_mime: Optional[str] = None,
         target_lang: str = "en",
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> TrustPassport:
         """Executes full scan pipeline and streams partial progress over SSE."""
         start_time = time.time()
@@ -55,6 +66,20 @@ class ScanOrchestrator:
         lang_info = detect_language(cleaned)
         entities = extract_all_entities(cleaned)
 
+        # Merge metadata explicit fields (url, phone, wallet, photo) into entities
+        meta_dict = metadata or {}
+        if meta_dict.get("url") and meta_dict["url"] not in entities["urls"]:
+            entities["urls"].append(meta_dict["url"])
+        if meta_dict.get("phone"):
+            p_raw = meta_dict["phone"]
+            if not any(p.get("raw") == p_raw or p.get("e164") == p_raw for p in entities["phones"]):
+                entities["phones"].append({"raw": p_raw, "e164": p_raw})
+        if meta_dict.get("wallet_address"):
+            w_raw = meta_dict["wallet_address"]
+            if not any(w.get("address") == w_raw for w in entities["wallets"]):
+                chain = "ethereum" if w_raw.startswith("0x") else ("bitcoin" if w_raw.startswith(("1", "3", "bc1")) else "tron")
+                entities["wallets"].append({"address": w_raw, "chain": chain})
+
         ctx = ScanContext(
             scan_id=scan_id,
             raw_text=raw_text,
@@ -65,7 +90,7 @@ class ScanOrchestrator:
             file_bytes=file_bytes,
             file_name=file_name,
             file_mime=file_mime,
-            metadata={"obfuscation_flags": obfuscation_flags},
+            metadata={**meta_dict, "obfuscation_flags": obfuscation_flags},
         )
 
         await event_broadcaster.emit(scan_id, {

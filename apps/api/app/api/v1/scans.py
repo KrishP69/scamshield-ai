@@ -35,17 +35,20 @@ async def create_scan(
     platform_val = PlatformType.UNKNOWN
     content_type = request.headers.get("content-type", "")
 
+    meta: dict = {}
     if "application/json" in content_type:
         try:
             body = await request.json()
             req_payload = ScanCreateRequest(**body)
             submitted_text = req_payload.text or ""
             platform_val = req_payload.platform or PlatformType.UNKNOWN
+            meta = {k: v for k, v in body.items() if k not in ("text", "platform")}
         except Exception:
             pass
-    elif payload and payload.text:
-        submitted_text = payload.text
+    elif payload:
+        submitted_text = payload.text or ""
         platform_val = payload.platform or PlatformType.UNKNOWN
+        meta = payload.model_dump(exclude={"text", "platform"}, exclude_none=True)
     else:
         submitted_text = text_form or ""
         if platform_form:
@@ -71,6 +74,7 @@ async def create_scan(
         file_name=file_name,
         file_mime=file_mime,
         target_lang=lang or "en",
+        metadata=meta,
     )
 
     _scan_store[scan_id] = {

@@ -36,3 +36,5 @@ class TrustPassport(BaseModel):
         description="Statutory legal and safety disclaimer"
     )
     created_at: str = Field(..., description="ISO-8601 creation timestamp")
+    submitted_text: Optional[str] = Field(None, description="Original submitted text for display and span highlighting")
+    platform: Optional[str] = Field(None, description="Source platform e.g. facebook, telegram")

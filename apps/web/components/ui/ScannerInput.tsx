@@ -59,6 +59,13 @@ export function ScannerInput() {
       }
 
       const data = await res.json();
+      if (typeof window !== "undefined" && data.passport) {
+        try {
+          sessionStorage.setItem(`scan_${data.scan_id}`, JSON.stringify(data.passport));
+        } catch {
+          // Ignore storage quota errors
+        }
+      }
       router.push(`/report/${data.scan_id}`);
     } catch (err: any) {
       // Local fallback navigation with query state

@@ -64,6 +64,8 @@ export interface TrustPassport {
   actions: string[];
   disclaimer: string;
   created_at: string;
+  submitted_text?: string | null;
+  platform?: string | null;
 }
 
 export interface ScanCreateRequest {

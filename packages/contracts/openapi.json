@@ -1663,6 +1663,30 @@
             "type": "string",
             "title": "Created At",
             "description": "ISO-8601 creation timestamp"
+          },
+          "submitted_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted Text",
+            "description": "Original submitted text for display and span highlighting"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform",
+            "description": "Source platform e.g. facebook, telegram"
           }
         },
         "type": "object",

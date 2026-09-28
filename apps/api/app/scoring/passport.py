@@ -183,4 +183,6 @@ def build_trust_passport(
         indicators=indicator_summary,
         actions=actions,
         created_at=datetime.now(timezone.utc).isoformat(),
+        submitted_text=context.raw_text if context else None,
+        platform=context.platform.value if (context and getattr(context, "platform", None) and hasattr(context.platform, "value")) else (str(context.platform) if (context and getattr(context, "platform", None)) else None),
     )

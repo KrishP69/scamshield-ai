@@ -38,13 +38,17 @@ async def create_scan(
     if "application/json" in content_type:
         try:
             body = await request.json()
-            req_payload = ScanCreateRequest(**body)
-            submitted_text = req_payload.text or ""
-            platform_val = req_payload.platform or PlatformType.UNKNOWN
+            submitted_text = body.get("text") or body.get("content") or body.get("url") or ""
+            p_str = body.get("platform")
+            if p_str:
+                try:
+                    platform_val = PlatformType(p_str)
+                except ValueError:
+                    platform_val = PlatformType.UNKNOWN
         except Exception:
             pass
-    elif payload and payload.text:
-        submitted_text = payload.text
+    elif payload and (payload.text or payload.url):
+        submitted_text = payload.text or payload.url or ""
         platform_val = payload.platform or PlatformType.UNKNOWN
     else:
         submitted_text = text_form or ""

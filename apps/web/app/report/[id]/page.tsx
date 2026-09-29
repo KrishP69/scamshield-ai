@@ -26,6 +26,7 @@ import {
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
+import { ThreatFactorsSection, ThreatFactorItem } from "@/components/ui/ThreatFactorsSection";
 
 interface Evidence {
   code: string;
@@ -60,6 +61,7 @@ interface TrustPassport {
   confidence: number;
   scam_type?: string | null;
   reasons: Evidence[];
+  factors?: ThreatFactorItem[];
   modules: ModuleSummary[];
   indicators: IndicatorSummary;
   actions: string[];
@@ -489,6 +491,14 @@ export default function ReportPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Threat Factor Decomposition (WHY IS THIS FISHY?) */}
+              {passport.factors && passport.factors.length > 0 && (
+                <ThreatFactorsSection
+                  factors={passport.factors}
+                  riskScore={passport.risk_score}
+                />
+              )}
 
               {/* Main Breakdown: Interactive Reasons & Message Inspector */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

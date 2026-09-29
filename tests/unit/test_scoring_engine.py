@@ -102,3 +102,56 @@ def test_bilingual_reason_synthesis():
     reasons_hi = synthesize_reasons(findings, target_lang="hi")
     assert len(reasons_hi) == 1
     assert "अग्रिम भुगतान" in reasons_hi[0].plain_text
+
+
+def test_threat_factors_synthesis():
+    from app.modules.base import ScanContext
+    from app.scoring.factors import synthesize_threat_factors
+
+    findings = [
+        Finding(
+            module="scam_guardian",
+            score=0.85,
+            confidence=0.92,
+            verdict=Verdict.DANGEROUS,
+            evidence=[
+                Evidence(
+                    code="ADVANCE_PAYMENT_REQUEST",
+                    severity=SeverityLevel.CRITICAL,
+                    title="Advance Fee Demanded",
+                    plain_text="Demands advance gate pass fee",
+                    source=ScanSource.RULE,
+                ),
+                Evidence(
+                    code="URGENCY",
+                    severity=SeverityLevel.HIGH,
+                    title="Urgency Language",
+                    plain_text="Within 10 minutes",
+                    source=ScanSource.RULE,
+                ),
+            ],
+            source=ScanSource.RULE,
+            latency_ms=10,
+        )
+    ]
+    ctx = ScanContext(
+        scan_id="test-factors-1",
+        raw_text="I am army officer transfer Rs 2000 gate pass deposit immediately within 10 minutes",
+        entities={"urls": ["http://pay-gatepass.xyz"]},
+    )
+
+    factors = synthesize_threat_factors(findings, ctx)
+    assert len(factors) == 5
+    categories = {f.category for f in factors}
+    assert categories == {"Coercion", "Identity", "Financial", "Credential", "Destination"}
+
+    # Urgency & Coercion should be triggered
+    coercion = next(f for f in factors if f.category == "Coercion")
+    assert coercion.is_triggered is True
+    assert "intense time pressure" in coercion.explanation
+
+    # Financial should be triggered
+    financial = next(f for f in factors if f.category == "Financial")
+    assert financial.is_triggered is True
+    assert "advance payment" in financial.explanation
+

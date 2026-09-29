@@ -20,6 +20,8 @@ import { InteractivePassportPreview } from "@/components/ui/InteractivePassportP
 import { ScenarioWalkthrough } from "@/components/ui/ScenarioWalkthrough";
 import { ComparisonTable } from "@/components/ui/ComparisonTable";
 import { Button } from "@/components/ui/Button";
+import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
+import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 
 export default function HomePage() {
   return (
@@ -74,6 +76,33 @@ export default function HomePage() {
 
       {/* 2. Sourced Statistics Section */}
       <StatsSection />
+
+      {/* Real-Time Fishy Link Interception & Telemetry Radar */}
+      <section className="py-14 sm:py-20 bg-paper-100/60 dark:bg-ink-900/60 border-y border-ink/10 dark:border-paper/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Active Threat Intelligence Engine</span>
+            </div>
+            <h2 className="font-display font-bold text-2xl sm:text-4xl text-ink dark:text-paper tracking-tight">
+              Real-Time Fishy Link Interceptor & Live Threat Feed
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-ink/75 dark:text-paper/75 leading-relaxed">
+              Test any suspicious link in real time. Our 6-layered engine detects Punycode homoglyphs, SSRF IP targets, high-risk TLDs, and queries live URLhaus threat intelligence feeds, displaying the exact detection method used.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-7">
+              <RealtimeLinkScanner />
+            </div>
+            <div className="lg:col-span-5">
+              <LiveThreatStream maxDisplay={5} />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 3. 6-Station Pipeline Section */}
       <PipelineSection />

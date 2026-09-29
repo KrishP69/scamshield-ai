@@ -11,10 +11,11 @@ CRYPTO_PATTERNS = {
     "solana": re.compile(r"\b[1-9A-HJ-NP-Za-km-z]{32,44}\b"),
 }
 
-# URL pattern matching standard and un-schemed domain addresses
+# URL pattern matching standard and un-schemed domain addresses, including Telegram and shortener links
 URL_PATTERN = re.compile(
     r"\b(?:https?://|www\.)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?|"
-    r"\b[a-zA-Z0-9.-]+\.(?:com|org|net|xyz|top|info|live|vip|online|site|co|in|tech|app)(?:/[^\s]*)?\b",
+    r"\b(?:t\.me|wa\.me|bit\.ly)/[a-zA-Z0-9_+/.-]+|"
+    r"\b[a-zA-Z0-9.-]+\.(?:com|org|net|xyz|top|info|live|vip|online|site|co|in|tech|app|me|io|cc|pw|ru|link|shop|club|work|biz)(?:/[^\s]*)?\b",
     re.IGNORECASE,
 )
 

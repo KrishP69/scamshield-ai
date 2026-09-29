@@ -5,6 +5,7 @@ from app.modules.base import ScanContext
 from app.schemas.common import ModuleStatus, RiskLevel
 from app.schemas.finding import Evidence, Finding
 from app.schemas.passport import IndicatorSummary, ModuleSummary, TrustPassport
+from app.scoring.factors import synthesize_threat_factors
 from app.scoring.fusion import calculate_fusion_score
 from app.scoring.reasons import synthesize_reasons
 from app.scoring.rules import apply_hard_rules
@@ -172,6 +173,9 @@ def build_trust_passport(
     # 6. Prescribe actions
     actions = get_recommended_actions(primary_scam_type, level)
 
+    # 7. Synthesize structured threat factors explaining WHY it is fishy
+    factors = synthesize_threat_factors(findings, context)
+
     return TrustPassport(
         scan_id=scan_id,
         risk_score=risk_score,
@@ -179,6 +183,7 @@ def build_trust_passport(
         confidence=round(avg_conf, 2),
         scam_type=primary_scam_type,
         reasons=reasons,
+        factors=factors,
         modules=module_summaries,
         indicators=indicator_summary,
         actions=actions,

@@ -3,6 +3,7 @@ import time
 from typing import Any, Dict, List, Optional
 from app.core.logging import logger
 from app.modules.base import DetectionModule, ScanContext
+from app.modules.link_scanner import link_scanner
 from app.modules.scam_guardian.guardian import scam_guardian
 from app.orchestrator.events import event_broadcaster
 from app.preprocess.clean import clean_text
@@ -19,8 +20,8 @@ class ScanOrchestrator:
     """Coordinates input preprocessing, parallel module fan-out, SSE streaming, and scoring fusion."""
 
     def __init__(self):
-        # Active modules in Phase 1 (additional modules register in Phase 2)
-        self.modules: List[DetectionModule] = [scam_guardian]
+        # Parallel active detection modules
+        self.modules: List[DetectionModule] = [scam_guardian, link_scanner]
 
     async def execute_scan(
         self,

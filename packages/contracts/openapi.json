@@ -80,6 +80,145 @@
         }
       }
     },
+    "/api/v1/links/check-realtime": {
+      "post": {
+        "tags": [
+          "Real-Time Safe Link Scanner"
+        ],
+        "summary": "Check Link Realtime",
+        "description": "Real-time deep analysis of a suspicious URL.\nEvaluates Punycode/Homoglyphs, SSRF/IP ranges, High-Risk TLDs, Phishing Keywords,\nShannon Entropy (DGA), Safe Unshortener, and live URLhaus/OpenPhish threat feeds.\nClearly outputs the primary detection method used.",
+        "operationId": "check_link_realtime_api_v1_links_check_realtime_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/links/live-feed": {
+      "get": {
+        "tags": [
+          "Real-Time Safe Link Scanner"
+        ],
+        "summary": "Get Realtime Threat Feed",
+        "description": "Returns the real-time live threat stream of newly caught fishy links,\nincluding the exact detection method used and timestamp for each.",
+        "operationId": "get_realtime_threat_feed_api_v1_links_live_feed_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Max recent items to fetch",
+              "default": 15,
+              "title": "Limit"
+            },
+            "description": "Max recent items to fetch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Realtime Threat Feed Api V1 Links Live Feed Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/links/stream": {
+      "get": {
+        "tags": [
+          "Real-Time Safe Link Scanner"
+        ],
+        "summary": "Stream Live Threats",
+        "description": "Server-Sent Events (SSE) stream pushing real-time threat intelligence and newly\nintercepted fishy links directly to the client website.",
+        "operationId": "stream_live_threats_api_v1_links_stream_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/links/stats": {
+      "get": {
+        "tags": [
+          "Real-Time Safe Link Scanner"
+        ],
+        "summary": "Get Link Scanner Stats",
+        "description": "Summary metrics of the Real-Time Safe Link Scanner.",
+        "operationId": "get_link_scanner_stats_api_v1_links_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Link Scanner Stats Api V1 Links Stats Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/scans": {
       "post": {
         "tags": [
@@ -1219,6 +1358,101 @@
         ],
         "title": "LabelQueueItem"
       },
+      "LinkCheckRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 3,
+            "title": "Url",
+            "description": "Suspicious URL or domain to analyze in real-time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "LinkCheckRequest"
+      },
+      "LinkCheckResponse": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "final_url": {
+            "type": "string",
+            "title": "Final Url"
+          },
+          "is_fishy": {
+            "type": "boolean",
+            "title": "Is Fishy"
+          },
+          "risk_score": {
+            "type": "integer",
+            "title": "Risk Score"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "primary_detection_method": {
+            "type": "string",
+            "title": "Primary Detection Method"
+          },
+          "detection_methods_used": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Detection Methods Used"
+          },
+          "factors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Factors"
+          },
+          "reasons": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "technical_breakdown": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Technical Breakdown"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "final_url",
+          "is_fishy",
+          "risk_score",
+          "risk_level",
+          "primary_detection_method",
+          "detection_methods_used",
+          "reasons",
+          "technical_breakdown",
+          "latency_ms",
+          "timestamp"
+        ],
+        "title": "LinkCheckResponse"
+      },
       "ModuleStatus": {
         "type": "string",
         "enum": [
@@ -1565,6 +1799,56 @@
         ],
         "title": "ShareReportResponse"
       },
+      "ThreatFactor": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Coercion, Authority, Financial, Credential, or Destination"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Human readable factor title"
+          },
+          "is_triggered": {
+            "type": "boolean",
+            "title": "Is Triggered",
+            "description": "Whether this threat factor is present"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity",
+            "description": "critical, high, medium, low, or safe",
+            "default": "safe"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation",
+            "description": "Detailed explanation of WHY this factor makes it fishy"
+          },
+          "evidence_snippet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Snippet",
+            "description": "Actual excerpt or indicator extracted from text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "title",
+          "is_triggered",
+          "explanation"
+        ],
+        "title": "ThreatFactor"
+      },
       "Token": {
         "properties": {
           "access_token": {
@@ -1632,6 +1916,14 @@
             "type": "array",
             "title": "Reasons",
             "description": "Top 3 to 6 sorted explainable evidence items with highlights"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/ThreatFactor"
+            },
+            "type": "array",
+            "title": "Factors",
+            "description": "Detailed threat factors explaining why this input is fishy"
           },
           "modules": {
             "items": {

@@ -1,7 +1,6 @@
 import asyncio
 import uuid
 from typing import Any, Dict, Optional
-import numpy as np
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.responses import StreamingResponse
 from app.core.rate_limit import check_rate_limit
@@ -142,96 +141,3 @@ async def quick_scan(payload: QuickScanRequest) -> QuickScanResponse:
         reasons=reasons,
     )
 
-
-@router.post("/ai-image")
-async def scan_ai_image(
-    request: Request,
-    file: Optional[UploadFile] = File(None),
-    image_base64: Optional[str] = Form(None),
-    preset: Optional[str] = Form(None),
-) -> Dict[str, Any]:
-    """
-    State-of-the-art forensic analysis to detect AI-generated images, deepfakes, and synthetic fraud.
-    Uses 2D Fast Fourier Transform (FFT) spectrum residual analysis,
-    Error Level Analysis (ELA) compression gradients, and Laplacian PRNU sensor noise evaluation.
-    """
-    await check_rate_limit(request)
-    from app.modules.ai_image_detector import detect_ai_generated_image
-    import base64
-    import io
-    from PIL import Image, ImageDraw, ImageFilter
-
-    image_bytes = None
-    filename = "uploaded_image.png"
-
-    if file:
-        image_bytes = await file.read()
-        filename = file.filename or filename
-    elif image_base64:
-        # Strip data uri prefix if present
-        b64_clean = image_base64
-        if "base64," in b64_clean:
-            b64_clean = b64_clean.split("base64,")[1]
-        try:
-            image_bytes = base64.b64decode(b64_clean)
-            filename = "pasted_image.png"
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid base64 image data")
-    elif preset:
-        # Generate representative forensic sample based on preset
-        if preset == "midjourney_profile":
-            # Synthetic pattern with characteristic high-frequency grid lattice
-            w, h = 512, 512
-            arr = np.zeros((h, w, 3), dtype=np.uint8)
-            y, x = np.mgrid[:h, :w]
-            # Synthetic radial face gradients
-            grad = np.clip(180 - np.sqrt((x-256)**2 + (y-256)**2) * 0.6, 20, 240).astype(np.uint8)
-            arr[:, :, 0] = grad
-            arr[:, :, 1] = np.clip(grad * 0.85 + 15, 0, 255).astype(np.uint8)
-            arr[:, :, 2] = np.clip(grad * 0.75 + 30, 0, 255).astype(np.uint8)
-            # Characteristic diffusion periodic lattice artifact (16-pixel stride)
-            lattice = ((x % 16 == 0) | (y % 16 == 0)).astype(np.uint8) * 22
-            arr[:, :, 0] = np.clip(arr[:, :, 0] + lattice, 0, 255)
-            arr[:, :, 1] = np.clip(arr[:, :, 1] + lattice, 0, 255)
-            buf = io.BytesIO()
-            Image.fromarray(arr).save(buf, format="JPEG", quality=92)
-            image_bytes = buf.getvalue()
-            filename = "midjourney_deepfake_profile.jpg"
-        elif preset == "dalle_payment_proof":
-            # Synthetic payment screenshot with high compression inconsistency
-            img = Image.new("RGB", (512, 512), color=(240, 242, 248))
-            draw = ImageDraw.Draw(img)
-            draw.rectangle([40, 40, 472, 472], fill=(255, 255, 255), outline=(200, 205, 220))
-            draw.rectangle([60, 60, 452, 160], fill=(47, 69, 255))
-            draw.text((80, 80), "TELEGRAM CRYPTO AIRDROP CONFIRMATION", fill=(255, 255, 255))
-            draw.text((80, 110), "+500.00 USDT TRANSFERRED TO WALLET", fill=(255, 255, 255))
-            buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=90)
-            image_bytes = buf.getvalue()
-            filename = "dalle_fake_payment_screenshot.jpg"
-        elif preset == "authentic_camera":
-            # Natural camera image simulation: organic scene gradients with optical decay and sensor noise
-            w, h = 512, 512
-            y, x = np.mgrid[:h, :w]
-            # Natural landscape luminosity gradient (smooth 1/f decay)
-            scene = np.sin(x / 45.0) * 40.0 + np.cos(y / 55.0) * 35.0 + (y * 0.25) + 110.0
-            img_scene = Image.fromarray(np.clip(scene, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(radius=2.5))
-            scene_arr = np.array(img_scene, dtype=np.float32)
-            noise = np.random.normal(0, 1.8, (h, w)).astype(np.float32)
-            arr = np.zeros((h, w, 3), dtype=np.uint8)
-            arr[:, :, 0] = np.clip(scene_arr + noise, 0, 255).astype(np.uint8)
-            arr[:, :, 1] = np.clip(scene_arr * 0.92 + noise, 0, 255).astype(np.uint8)
-            arr[:, :, 2] = np.clip(scene_arr * 0.85 + noise, 0, 255).astype(np.uint8)
-            buf = io.BytesIO()
-            Image.fromarray(arr).save(buf, format="JPEG", quality=95)
-            image_bytes = buf.getvalue()
-            filename = "authentic_camera_photo.jpg"
-
-    if not image_bytes:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No image provided. Please upload an image file or select a preset.",
-        )
-
-    result = detect_ai_generated_image(image_bytes, filename=filename)
-    return result

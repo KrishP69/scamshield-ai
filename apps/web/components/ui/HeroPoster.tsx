@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { ShieldCheck, ShieldAlert, Cpu, Eye, Sparkles, Radio, Zap } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Cpu } from "lucide-react";
 
 export function HeroPoster() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -122,21 +122,21 @@ export function HeroPoster() {
           </div>
         </div>
 
-        {/* Chip B: AI Image & Deepfake Detector (Bottom Left) */}
+        {/* Chip B: Telegram & Fishy Link Guard (Bottom Left) */}
         <div
           className="absolute -bottom-4 -left-8 sm:-left-12 preserve-3d animate-float-slow [animation-delay:1.5s]"
           style={{ transform: "translateZ(60px)" }}
         >
-          <div className="px-3.5 py-2.5 rounded-xl bg-white/95 dark:bg-ink-800/95 border border-violet-500/40 shadow-xl backdrop-blur-md flex items-center gap-2.5 hover:scale-105 transition-transform">
-            <div className="w-7 h-7 rounded-lg bg-violet-500/15 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-              <Eye className="w-4 h-4" />
+          <div className="px-3.5 py-2.5 rounded-xl bg-white/95 dark:bg-ink-800/95 border border-emerald-500/40 shadow-xl backdrop-blur-md flex items-center gap-2.5 hover:scale-105 transition-transform">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <ShieldAlert className="w-4 h-4" />
             </div>
             <div className="text-left font-mono">
-              <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400 block leading-tight">
-                AI DEEPFAKE FORENSICS
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block leading-tight">
+                TELEGRAM & LINK GUARD
               </span>
               <span className="text-[9px] text-ink/60 dark:text-paper/60">
-                FFT Spectrum &bull; 99.4% precision
+                Live URLhaus & Homoglyph Engine
               </span>
             </div>
           </div>

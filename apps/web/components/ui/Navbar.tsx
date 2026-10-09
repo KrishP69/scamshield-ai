@@ -12,7 +12,6 @@ export function Navbar() {
 
   const navLinks = [
     { label: "24x7 Radar", href: "/radar", badge: "LIVE" },
-    { label: "AI Forensics", href: "/ai-detector", badge: "AI" },
     { label: "Modules", href: "/modules" },
     { label: "How It Works", href: "/how-it-works" },
     { label: "Docs", href: "/docs" },

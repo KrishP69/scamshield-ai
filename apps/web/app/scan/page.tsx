@@ -4,12 +4,10 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   FileText,
-  Image as ImageIcon,
   Link2,
   Phone,
   Coins,
   FileCode,
-  Mic,
   ShieldCheck,
   ShieldAlert,
   ArrowRight,
@@ -18,7 +16,6 @@ import {
   Sparkles,
   Radio,
   ExternalLink,
-  Eye,
 } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
@@ -26,7 +23,6 @@ import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ThreatFactorsSection } from "@/components/ui/ThreatFactorsSection";
-import { AiImageDetector } from "@/components/ui/AiImageDetector";
 
 const PRESET_MESSAGES = [
   {
@@ -71,7 +67,6 @@ export default function ScanPage() {
 
   const tabs = [
     { id: "link", label: "Telegram & Fishy Link Interceptor", icon: Link2, badge: "REALTIME" },
-    { id: "ai_image", label: "AI Image & Deepfake Forensics", icon: Eye, badge: "AI LAB" },
     { id: "message", label: "Chat & Social Engineering", icon: FileText },
     { id: "phone", label: "Phone / Profile", icon: Phone },
     { id: "crypto", label: "Crypto Wallet", icon: Coins },
@@ -297,9 +292,6 @@ export default function ScanPage() {
                 key={selectedThreatUrl || "realtime-link-scanner"}
                 initialUrl={selectedThreatUrl}
               />
-            ) : activeTab === "ai_image" ? (
-              /* AI Image Forensics Lab */
-              <AiImageDetector />
             ) : (
               /* Message & Other Tab Form */
               <form onSubmit={handleScan} className="space-y-4">
@@ -367,7 +359,7 @@ export default function ScanPage() {
             )}
 
             {/* Scan Result for Message Form */}
-            {activeTab !== "link" && activeTab !== "ai_image" && result && (
+            {activeTab !== "link" && result && (
               <div className="mt-8 pt-8 border-t border-ink/10 dark:border-paper/10 space-y-6">
                 {/* Result Header */}
                 <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-paper-50 dark:bg-ink-950 border border-ink/10 dark:border-paper/10">

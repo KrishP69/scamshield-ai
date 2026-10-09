@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ScreenshotInspector } from "@/components/ui/ScreenshotInspector";
+import { ScrollVisualizer } from "@/components/ui/ScrollVisualizer";
 
 export default function HomePage() {
   return (
@@ -97,6 +98,9 @@ export default function HomePage() {
 
       {/* 2. Sourced Statistics Section */}
       <StatsSection />
+
+      {/* Holographic Scroll-Driven Threat Engine & Looping Visual Cinema */}
+      <ScrollVisualizer />
 
       {/* Real-Time Fishy Link Interception & Telemetry Radar */}
       <section className="py-14 sm:py-20 bg-paper-100/60 dark:bg-ink-900/60 border-y border-ink/10 dark:border-paper/10">

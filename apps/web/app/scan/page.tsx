@@ -16,6 +16,7 @@ import {
   Sparkles,
   Radio,
   ExternalLink,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
@@ -23,6 +24,7 @@ import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ThreatFactorsSection } from "@/components/ui/ThreatFactorsSection";
+import { ScreenshotInspector } from "@/components/ui/ScreenshotInspector";
 
 const PRESET_MESSAGES = [
   {
@@ -67,6 +69,7 @@ export default function ScanPage() {
 
   const tabs = [
     { id: "link", label: "Telegram & Fishy Link Interceptor", icon: Link2, badge: "REALTIME" },
+    { id: "screenshot", label: "Fishy Screenshot & Absurd Deals", icon: ImageIcon, badge: "VISUAL AI" },
     { id: "message", label: "Chat & Social Engineering", icon: FileText },
     { id: "phone", label: "Phone / Profile", icon: Phone },
     { id: "crypto", label: "Crypto Wallet", icon: Coins },
@@ -292,6 +295,8 @@ export default function ScanPage() {
                 key={selectedThreatUrl || "realtime-link-scanner"}
                 initialUrl={selectedThreatUrl}
               />
+            ) : activeTab === "screenshot" ? (
+              <ScreenshotInspector />
             ) : (
               /* Message & Other Tab Form */
               <form onSubmit={handleScan} className="space-y-4">
@@ -359,7 +364,7 @@ export default function ScanPage() {
             )}
 
             {/* Scan Result for Message Form */}
-            {activeTab !== "link" && result && (
+            {activeTab !== "link" && activeTab !== "screenshot" && result && (
               <div className="mt-8 pt-8 border-t border-ink/10 dark:border-paper/10 space-y-6">
                 {/* Result Header */}
                 <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-paper-50 dark:bg-ink-950 border border-ink/10 dark:border-paper/10">

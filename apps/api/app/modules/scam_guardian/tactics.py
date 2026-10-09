@@ -137,6 +137,18 @@ TACTIC_RULES: Dict[str, Dict[str, any]] = {
             r"\b(?:online\s*earning\s*task|telegram\s*task\s*(?:group|channel)|youtube\s*like\s*job)\b",
         ],
     },
+    "gaming_reward_credential_trap": {
+        "title": "Social Media & Gaming Account Takeover Trap",
+        "severity": SeverityLevel.CRITICAL,
+        "plain_text": "Promises free in-game currency (Free Fire Diamonds, BGMI UC, Robux) or absurd gifts in exchange for your Instagram, Facebook, or game Login ID and Password to hijack your account.",
+        "patterns": [
+            r"\b(?:free\s*(?:fire\s*)?diamonds?|free\s*uc|free\s*robux|free\s*v[\s-]?bucks?|50,?000\s*diamonds?)\b.*?\b(?:instagram|fb|facebook|login\s*id|password|id\s*pass)\b",
+            r"\b(?:sync\s*(?:with\s*)?instagram|login\s*with\s*(?:instagram|fb|facebook)\s*to\s*(?:claim|verify|sync))\b",
+            r"\b(?:claim\s*(?:free\s*)?(?:diamonds|uc|robux|v[\s-]?bucks|skins)).*?(?:enter\s*password|login\s*id|sync)\b",
+            r"\b(?:instagram\s*(?:username|login\s*id|user\s*id).*?(?:instagram\s*)?password)\b",
+            r"\b(?:enter\s*(?:id\s*(?:and|&)\s*pass|id\s*pass|login\s*id\s*password))\b",
+        ],
+    },
     "utility_electricity_scam": {
         "title": "Fake Electricity / Utility Disconnection Threat",
         "severity": SeverityLevel.CRITICAL,

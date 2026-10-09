@@ -10,6 +10,7 @@ import {
   ExternalLink,
   Users,
   Award,
+  Zap,
 } from "lucide-react";
 import { HeroPoster } from "@/components/ui/HeroPoster";
 import { ScannerInput } from "@/components/ui/ScannerInput";
@@ -22,6 +23,7 @@ import { ComparisonTable } from "@/components/ui/ComparisonTable";
 import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
+import { ScreenshotInspector } from "@/components/ui/ScreenshotInspector";
 
 export default function HomePage() {
   return (
@@ -68,6 +70,13 @@ export default function HomePage() {
                   >
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     <span>24x7 Telegram Threat Radar</span>
+                  </Link>
+                  <Link
+                    href="/screenshot-inspector"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-semibold text-xs border border-rose-500/25 transition-all"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Fishy Screenshot & Deal Inspector</span>
                   </Link>
                 </div>
               </div>
@@ -127,6 +136,38 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Phishing Screenshot & Absurd Deal Banner Inspector Section */}
+      <section className="py-14 sm:py-20 bg-paper dark:bg-ink-950 border-b border-ink/10 dark:border-paper/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold mb-3">
+              <Zap className="w-3.5 h-3.5 text-rose-500" />
+              <span>Visual Phishing & Account Takeover Defense</span>
+            </div>
+            <h2 className="font-display font-bold text-2xl sm:text-4xl text-ink dark:text-paper tracking-tight">
+              Fishy Screenshot & Absurd Deal Inspector
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-ink/75 dark:text-paper/75 leading-relaxed">
+              Catches fake 50,000 game diamonds banners, fake Instagram copyright notices, and absurd prize graphics engineered to steal your Instagram credentials and take over your accounts.
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <ScreenshotInspector />
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/screenshot-inspector"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-semibold text-xs border border-rose-500/25 transition-all shadow-sm hover:shadow-md"
+            >
+              <Zap className="w-3.5 h-3.5 text-rose-500" />
+              <span>Open Fullscreen Screenshot Inspector Workbench</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* 3. 6-Station Pipeline Section */}
       <PipelineSection />

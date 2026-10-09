@@ -141,3 +141,52 @@ async def quick_scan(payload: QuickScanRequest) -> QuickScanResponse:
         reasons=reasons,
     )
 
+
+@router.post("/screenshot-inspector")
+async def scan_screenshot_banner(
+    request: Request,
+    file: Optional[UploadFile] = File(None),
+    image_base64: Optional[str] = Form(None),
+    preset: Optional[str] = Form(None),
+    text_hint: Optional[str] = Form(None),
+) -> Dict[str, Any]:
+    """
+    Forensic analysis of suspicious screenshots, phishing posters, and absurd deal banners.
+    Identifies credential-theft traps (e.g. fake free game currency asking for Instagram login),
+    fake lottery winners, task scams, and account takeover phishing.
+    """
+    await check_rate_limit(request)
+    from app.modules.screenshot_inspector import inspect_screenshot_banner
+    import base64
+
+    image_bytes = None
+    filename = "uploaded_screenshot.png"
+
+    if file:
+        image_bytes = await file.read()
+        filename = file.filename or filename
+    elif image_base64:
+        b64_clean = image_base64
+        if "base64," in b64_clean:
+            b64_clean = b64_clean.split("base64,")[1]
+        try:
+            image_bytes = base64.b64decode(b64_clean)
+            filename = "pasted_screenshot.png"
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid base64 screenshot data")
+
+    if not image_bytes and not preset:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No screenshot or preset provided. Please upload an image file or choose a preset.",
+        )
+
+    result = inspect_screenshot_banner(
+        image_bytes=image_bytes,
+        text_hint=text_hint,
+        filename=filename,
+        preset=preset,
+    )
+    return result
+
+

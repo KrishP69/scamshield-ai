@@ -19,7 +19,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-ink/10 dark:border-paper/10 bg-paper/95 dark:bg-ink-800/95 backdrop-blur-md transition-colors">
+    <header className="sticky top-0 z-40 w-full border-b border-ink/10 dark:border-paper/10 bg-paper/85 dark:bg-[#070B18]/85 backdrop-blur-xl transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 flex-nowrap">
           {/* Logo */}

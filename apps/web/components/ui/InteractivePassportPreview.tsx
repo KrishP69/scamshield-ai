@@ -183,7 +183,7 @@ export function InteractivePassportPreview() {
   };
 
   return (
-    <section className="py-20 bg-paper dark:bg-ink-800 transition-colors" id="trust-passport">
+    <section className="py-20 bg-paper/60 dark:bg-ink-900/60 backdrop-blur-md transition-colors" id="trust-passport">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <span className="font-mono text-xs font-semibold text-ultramarine dark:text-ultramarine-light uppercase tracking-wider">

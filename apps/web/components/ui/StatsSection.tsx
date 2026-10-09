@@ -27,7 +27,7 @@ export function StatsSection() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 bg-paper-100 dark:bg-ink-900 border-y border-ink/10 dark:border-paper/10 transition-colors">
+    <section className="py-16 sm:py-20 bg-paper-100/60 dark:bg-ink-900/60 backdrop-blur-md border-y border-ink/10 dark:border-paper/10 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-signal/10 border border-signal/20 text-signal font-mono text-xs font-semibold uppercase tracking-wider mb-4">
@@ -46,7 +46,7 @@ export function StatsSection() {
           {stats.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col justify-between p-6 sm:p-8 rounded-2xl bg-white dark:bg-ink-800 border border-ink/10 dark:border-paper/10 shadow-sm"
+              className="flex flex-col justify-between p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-ink-800/80 backdrop-blur-sm border border-ink/10 dark:border-paper/10 shadow-sm"
             >
               <div>
                 <span className="font-display font-extrabold text-3xl sm:text-4xl text-ultramarine dark:text-ultramarine-light">

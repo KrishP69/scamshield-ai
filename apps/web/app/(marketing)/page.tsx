@@ -103,7 +103,7 @@ export default function HomePage() {
       <ScrollVisualizer />
 
       {/* Real-Time Fishy Link Interception & Telemetry Radar */}
-      <section className="py-14 sm:py-20 bg-paper-100/60 dark:bg-ink-900/60 border-y border-ink/10 dark:border-paper/10">
+      <section id="live-scanner" className="py-14 sm:py-20 bg-paper-100/60 dark:bg-ink-900/60 backdrop-blur-md border-y border-ink/10 dark:border-paper/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-3">
@@ -141,7 +141,7 @@ export default function HomePage() {
       </section>
 
       {/* Phishing Screenshot & Absurd Deal Banner Inspector Section */}
-      <section className="py-14 sm:py-20 bg-paper dark:bg-ink-950 border-b border-ink/10 dark:border-paper/10">
+      <section id="screenshot-lab" className="py-14 sm:py-20 bg-paper/60 dark:bg-ink-950/60 backdrop-blur-md border-b border-ink/10 dark:border-paper/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold mb-3">
@@ -189,7 +189,7 @@ export default function HomePage() {
       <ComparisonTable />
 
       {/* 8. Privacy & DPDP Highlights */}
-      <section className="py-20 bg-paper dark:bg-ink-800 border-t border-ink/10 dark:border-paper/10 transition-colors">
+      <section className="py-20 bg-paper/60 dark:bg-ink-900/60 backdrop-blur-md border-t border-ink/10 dark:border-paper/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <span className="font-mono text-xs font-semibold text-verify uppercase tracking-wider">
@@ -204,7 +204,7 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-white dark:bg-ink-900 border border-ink/10 dark:border-paper/10">
+            <div className="p-6 rounded-2xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-sm border border-ink/10 dark:border-paper/10">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-verify flex items-center justify-center mb-4">
                 <Lock className="w-4 h-4" />
               </div>
@@ -216,7 +216,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white dark:bg-ink-900 border border-ink/10 dark:border-paper/10">
+            <div className="p-6 rounded-2xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-sm border border-ink/10 dark:border-paper/10">
               <div className="w-8 h-8 rounded-lg bg-ultramarine/10 text-ultramarine dark:text-ultramarine-light flex items-center justify-center mb-4">
                 <Layers className="w-4 h-4" />
               </div>
@@ -228,7 +228,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white dark:bg-ink-900 border border-ink/10 dark:border-paper/10">
+            <div className="p-6 rounded-2xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-sm border border-ink/10 dark:border-paper/10">
               <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center mb-4">
                 <Sparkles className="w-4 h-4" />
               </div>
@@ -244,7 +244,7 @@ export default function HomePage() {
       </section>
 
       {/* 9. Team & Institution */}
-      <section className="py-20 bg-paper-100 dark:bg-ink-900 border-t border-ink/10 dark:border-paper/10 transition-colors">
+      <section className="py-20 bg-paper-100/60 dark:bg-ink-900/60 backdrop-blur-md border-t border-ink/10 dark:border-paper/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-6 space-y-4">

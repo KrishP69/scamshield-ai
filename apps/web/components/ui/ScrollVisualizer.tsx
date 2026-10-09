@@ -9,13 +9,12 @@ import {
   Zap,
   Play,
   Pause,
-  RotateCcw,
   Sparkles,
   ArrowRight,
   Cpu,
   Layers,
   Activity,
-  Maximize2,
+  Lock,
 } from "lucide-react";
 
 interface VisualStage {
@@ -39,7 +38,7 @@ const VISUAL_STAGES: VisualStage[] = [
     subtitle: "24x7 Real-Time Telemetry & Heuristic Scam Interceptor",
     imageSrc: "/assets/cyber_shield_radar.jpg",
     badge: "CORE SHIELD ACTIVE",
-    badgeColor: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+    badgeColor: "bg-blue-500/15 text-blue-600 dark:text-cyan-400 border-blue-500/30",
     statusText: "98.4% INTEGRITY // 24x7 PING ACTIVE",
     telemetry: [
       { label: "Shield Strength", value: "98.4%" },
@@ -54,9 +53,9 @@ const VISUAL_STAGES: VisualStage[] = [
     id: "phishing_matrix",
     stationNumber: "STATION 02",
     title: "Visual Phishing & Credential Interception Matrix",
-    subtitle: "Catches Absurd Game Currency Banners & Account Takeover Traps",
+    subtitle: "Catches Malicious Homoglyph Domains & URLhaus Targets",
     imageSrc: "/assets/phishing_threat_matrix.jpg",
-    badge: "PHISHING INTERCEPTOR",
+    badge: "THREAT INTERCEPTOR",
     badgeColor: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30",
     statusText: "THREAT ALERT: PHISHING CAMPAIGN DETECTED",
     telemetry: [
@@ -66,16 +65,34 @@ const VISUAL_STAGES: VisualStage[] = [
       { label: "URLhaus Telemetry", value: "LIVE FEED" },
     ],
     description:
-      "Inspects screenshot banners offering 50,000 free game diamonds or fake Instagram copyright notices designed to steal social media credentials.",
+      "Intercepts spoofed banking gateways, Punycode homoglyphs, and SSRF loopback endpoints across Facebook and Telegram channels.",
+  },
+  {
+    id: "screenshot_lab",
+    stationNumber: "STATION 03",
+    title: "Forensic Screenshot & Absurd Deal Lab",
+    subtitle: "Catches Fake 50k Free Game Diamonds & Instagram Phishing",
+    imageSrc: "/assets/screenshot_forensics_lab.jpg",
+    badge: "FORENSIC VISION",
+    badgeColor: "bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30",
+    statusText: "DECEPTIVE BANNER DETECTED // CREDENTIAL TRAP FLAGGED",
+    telemetry: [
+      { label: "Absurd Deal Risk", value: "99/100" },
+      { label: "OCR OCR Text Scan", value: "50,000 GEMS" },
+      { label: "Phish Indicator", value: "LOGIN FORM" },
+      { label: "Account Takeover", value: "PREVENTED" },
+    ],
+    description:
+      "Inspects screenshot banners offering absurd free diamonds or fake Instagram security notices engineered to hijack user credentials.",
   },
   {
     id: "trust_passport",
-    stationNumber: "STATION 03",
+    stationNumber: "STATION 04",
     title: "Zero-Knowledge Cryptographic Trust Passport",
     subtitle: "Explainable Risk Scoring with Complete Privacy Preservation",
     imageSrc: "/assets/trust_passport_core.jpg",
     badge: "ZK-SNARK VERIFIED",
-    badgeColor: "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30",
+    badgeColor: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
     statusText: "DECENTRALIZED IDENTITY // BLOCKCHAIN VERIFIED",
     telemetry: [
       { label: "Privacy Protection", value: "100% ZK" },
@@ -105,7 +122,6 @@ export function ScrollVisualizer() {
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      // Calculate progress while element is inside or near viewport (-windowHeight to windowHeight)
       const elementTop = rect.top;
       const elementHeight = rect.height;
       const totalDist = windowHeight + elementHeight;
@@ -114,13 +130,15 @@ export function ScrollVisualizer() {
       const progress = Math.min(Math.max(currentDist / totalDist, 0), 1);
       setScrollProgress(progress);
 
-      // Scroll-driven stage change when scrolling deeply into the container
-      if (progress >= 0.1 && progress < 0.45) {
+      // Scroll-driven stage change when scrolling through the container
+      if (progress >= 0.1 && progress < 0.35) {
         setActiveStageIndex(0);
-      } else if (progress >= 0.45 && progress < 0.75) {
+      } else if (progress >= 0.35 && progress < 0.6) {
         setActiveStageIndex(1);
-      } else if (progress >= 0.75) {
+      } else if (progress >= 0.6 && progress < 0.85) {
         setActiveStageIndex(2);
+      } else if (progress >= 0.85) {
+        setActiveStageIndex(3);
       }
     };
 
@@ -161,7 +179,7 @@ export function ScrollVisualizer() {
   return (
     <section
       ref={containerRef}
-      className="py-16 sm:py-24 bg-paper dark:bg-[#070B18] border-b border-ink/10 dark:border-paper/10 overflow-hidden relative"
+      className="py-16 sm:py-24 bg-paper/60 dark:bg-[#070B18]/60 backdrop-blur-md border-b border-ink/10 dark:border-paper/10 overflow-hidden relative"
     >
       {/* Ambient Cyber Background Grid Glows */}
       <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full bg-ultramarine/15 blur-3xl pointer-events-none -z-10" />
@@ -180,7 +198,7 @@ export function ScrollVisualizer() {
               ScamShield AI Holographic Threat Engine
             </h2>
             <p className="text-sm sm:text-base text-ink/75 dark:text-paper/75 leading-relaxed">
-              Scroll down to navigate through our multi-stage detection pipeline, or watch the automated continuous
+              Scroll down to navigate through our 4-station visual detection pipeline, or watch the automated continuous
               telemetry loop scan live digital battlefields in real time.
             </p>
           </div>
@@ -213,8 +231,8 @@ export function ScrollVisualizer() {
           </div>
         </div>
 
-        {/* Stage Selector Pills */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* 4 Stage Selector Pills */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {VISUAL_STAGES.map((stage, idx) => {
             const isSelected = activeStageIndex === idx;
             return (
@@ -242,7 +260,7 @@ export function ScrollVisualizer() {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-xs sm:text-sm text-ink dark:text-paper leading-tight">
+                  <h4 className="font-display font-bold text-xs sm:text-sm text-ink dark:text-paper leading-tight line-clamp-1">
                     {stage.title}
                   </h4>
                   <p className="text-[11px] text-ink/60 dark:text-paper/60 line-clamp-1 mt-0.5">
@@ -264,7 +282,7 @@ export function ScrollVisualizer() {
             transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
           }}
         >
-          {/* Main Visual Image (Cycles through the 3 generated images) */}
+          {/* Main Visual Image */}
           <div className="relative w-full h-[380px] sm:h-[480px] md:h-[540px] overflow-hidden bg-black flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -301,7 +319,7 @@ export function ScrollVisualizer() {
                 <div className="space-y-1 max-w-lg">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                      {activeStage.stationNumber}
+                      {stagePrefix(activeStage.stationNumber)}
                     </span>
                     <h3 className="font-display font-bold text-sm sm:text-base text-white">
                       {activeStage.title}
@@ -371,4 +389,8 @@ export function ScrollVisualizer() {
       </div>
     </section>
   );
+}
+
+function stagePrefix(text: string) {
+  return text;
 }

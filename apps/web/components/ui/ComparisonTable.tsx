@@ -54,7 +54,7 @@ export function ComparisonTable() {
   ];
 
   return (
-    <section className="py-20 bg-paper-100 dark:bg-ink-900 border-t border-ink/10 dark:border-paper/10 transition-colors" id="comparison">
+    <section className="py-20 bg-paper-100/60 dark:bg-ink-900/60 backdrop-blur-md border-t border-ink/10 dark:border-paper/10 transition-colors" id="comparison">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="font-mono text-xs font-semibold text-ultramarine dark:text-ultramarine-light uppercase tracking-wider">

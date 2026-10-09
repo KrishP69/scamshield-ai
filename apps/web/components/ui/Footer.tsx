@@ -4,7 +4,7 @@ import { ShieldAlert, PhoneCall, ExternalLink, ShieldCheck, Heart } from "lucide
 
 export function Footer() {
   return (
-    <footer className="border-t border-ink/10 dark:border-paper/10 bg-white dark:bg-[#070B18] text-ink dark:text-paper/90 transition-colors">
+    <footer className="border-t border-ink/10 dark:border-paper/10 bg-white/80 dark:bg-[#070B18]/85 backdrop-blur-md text-ink dark:text-paper/90 transition-colors">
       {/* Emergency Cybercrime Helpline Banner */}
       <div className="bg-signal/10 dark:bg-signal/15 border-b border-signal/20 py-3.5 px-4 text-center">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm">

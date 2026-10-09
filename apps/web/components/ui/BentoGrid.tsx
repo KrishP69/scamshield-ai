@@ -18,7 +18,7 @@ import {
 
 export function BentoGrid() {
   return (
-    <section className="py-20 bg-paper-100 dark:bg-ink-900 border-t border-ink/10 dark:border-paper/10 transition-colors" id="modules">
+    <section className="py-20 bg-paper-100/60 dark:bg-ink-900/60 backdrop-blur-md border-t border-ink/10 dark:border-paper/10 transition-colors" id="modules">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>

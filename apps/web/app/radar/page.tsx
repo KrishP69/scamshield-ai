@@ -124,10 +124,10 @@ export default function RadarPage() {
             </div>
           </div>
 
-          {/* Main 2-Column Radar Interface */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Main 2-Column Radar Interface (Even Heights) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Left: Real-Time Interceptor Scanner */}
-            <div className="lg:col-span-7 space-y-4">
+            <div className="lg:col-span-7 flex flex-col">
               <RealtimeLinkScanner
                 key={`radar-scanner-${scanKey}`}
                 initialUrl={activeUrl}
@@ -135,9 +135,9 @@ export default function RadarPage() {
             </div>
 
             {/* Right: 24x7 Live Threat Telemetry Feed */}
-            <div className="lg:col-span-5 space-y-4">
+            <div className="lg:col-span-5 flex flex-col">
               <LiveThreatStream
-                maxDisplay={7}
+                maxDisplay={6}
                 onSelectThreat={(selectedUrl) => {
                   setActiveUrl(selectedUrl);
                   setScanKey((prev) => prev + 1);

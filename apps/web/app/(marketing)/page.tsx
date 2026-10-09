@@ -113,11 +113,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-7">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <div className="lg:col-span-7 flex flex-col">
               <RealtimeLinkScanner />
             </div>
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-5 flex flex-col">
               <LiveThreatStream maxDisplay={5} />
             </div>
           </div>

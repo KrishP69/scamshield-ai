@@ -127,8 +127,16 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
     handleCheck(sampleUrl);
   };
 
+  React.useEffect(() => {
+    if (initialUrl && initialUrl.trim()) {
+      setUrl(initialUrl);
+      handleCheck(initialUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUrl]);
+
   return (
-    <div className="w-full bg-white dark:bg-ink-800 rounded-2xl border border-ink/10 dark:border-paper/10 shadow-xl p-4 sm:p-6 transition-all">
+    <div className="w-full h-full bg-white dark:bg-ink-800 rounded-2xl border border-ink/10 dark:border-paper/10 shadow-xl p-4 sm:p-6 transition-all flex flex-col justify-between">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
@@ -235,6 +243,71 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
         <div className="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {/* Active Defense Capabilities (balances left & right columns when no scan is active) */}
+      {!result && !loading && (
+        <div className="mt-5 pt-4 border-t border-ink/10 dark:border-paper/10 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-ink/50 dark:text-paper/50 font-bold">
+              Autonomous Defense Capabilities:
+            </span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              6 Engines Online
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-900/60 border border-ink/10 dark:border-paper/10">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                <span className="font-display font-bold text-xs text-ink dark:text-paper">
+                  Telegram Phish & Vector Shield
+                </span>
+              </div>
+              <p className="text-[11px] text-ink/65 dark:text-paper/65 leading-snug">
+                Catches crypto pump channels, fake TON airdrop drainers, task jobs, and session hijacking bots.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-900/60 border border-ink/10 dark:border-paper/10">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+                <span className="font-display font-bold text-xs text-ink dark:text-paper">
+                  Punycode & Homoglyph Hunter
+                </span>
+              </div>
+              <p className="text-[11px] text-ink/65 dark:text-paper/65 leading-snug">
+                Detects mixed-script Cyrillic and Greek Unicode lookalikes spoofing major banking and crypto brands.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-900/60 border border-ink/10 dark:border-paper/10">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <span className="font-display font-bold text-xs text-ink dark:text-paper">
+                  Shannon Entropy DGA Analyzer
+                </span>
+              </div>
+              <p className="text-[11px] text-ink/65 dark:text-paper/65 leading-snug">
+                Calculates mathematical character entropy to uncover algorithmically generated botnet domains.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-900/60 border border-ink/10 dark:border-paper/10">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <span className="font-display font-bold text-xs text-ink dark:text-paper">
+                  SSRF & Private IP Probe Guard
+                </span>
+              </div>
+              <p className="text-[11px] text-ink/65 dark:text-paper/65 leading-snug">
+                Blocks intranet probes targeting RFC 1918 subnets, loopbacks, and cloud metadata (169.254.*).
+              </p>
+            </div>
+          </div>
         </div>
       )}
 

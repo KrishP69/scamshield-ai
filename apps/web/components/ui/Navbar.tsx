@@ -12,23 +12,20 @@ export function Navbar() {
 
   const navLinks = [
     { label: "24x7 Radar", href: "/radar", badge: "LIVE" },
-    { label: "AI Image Forensics", href: "/ai-detector", badge: "AI" },
-    { label: "Product", href: "/product" },
+    { label: "AI Forensics", href: "/ai-detector", badge: "AI" },
     { label: "Modules", href: "/modules" },
     { label: "How It Works", href: "/how-it-works" },
-    { label: "Learn", href: "/learn" },
-    { label: "Safety", href: "/safety" },
     { label: "Docs", href: "/docs" },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-ink/10 dark:border-paper/10 bg-paper/90 dark:bg-ink-800/90 backdrop-blur-md transition-colors">
+    <header className="sticky top-0 z-40 w-full border-b border-ink/10 dark:border-paper/10 bg-paper/95 dark:bg-ink-800/95 backdrop-blur-md transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 flex-nowrap">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 text-ink dark:text-paper group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine rounded-md"
+            className="flex items-center gap-2.5 text-ink dark:text-paper group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine rounded-md mr-4"
           >
             <div className="w-9 h-9 rounded-lg bg-ultramarine text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               <ShieldAlert className="w-5 h-5" />
@@ -44,12 +41,12 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main Navigation">
+          <nav className="hidden md:flex items-center gap-1.5 flex-nowrap" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-ink/75 dark:text-paper/75 hover:text-ink dark:hover:text-paper hover:bg-paper-200 dark:hover:bg-ink-700 rounded-md transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-ink/75 dark:text-paper/75 hover:text-ink dark:hover:text-paper hover:bg-paper-200 dark:hover:bg-ink-700 rounded-lg transition-colors whitespace-nowrap"
               >
                 <span>{link.label}</span>
                 {link.badge && (
@@ -68,18 +65,11 @@ export function Navbar() {
           </nav>
 
           {/* Actions & Utilities */}
-          <div className="hidden sm:flex items-center gap-2.5">
-            <Link
-              href="/radar"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/20 transition-all"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Live Radar</span>
-            </Link>
+          <div className="hidden sm:flex items-center gap-2 shrink-0">
             <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/scan">
-              <Button size="sm" className="gap-1.5 font-medium shadow-sm hover:shadow-md transition-all">
+              <Button size="sm" className="gap-1.5 font-semibold shadow-sm hover:shadow-md transition-all">
                 <span>Threat Scanner</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>

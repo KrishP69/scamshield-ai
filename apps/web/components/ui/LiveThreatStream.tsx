@@ -42,7 +42,7 @@ const FALLBACK_THREAT_POOL: LiveThreatItem[] = [
     risk_score: 96,
     risk_level: "CRITICAL",
     detection_method: "Telegram Vector Analysis: Telegram Crypto Multiplier & VIP Signal Fraud",
-    timestamp: new Date().toISOString(),
+    timestamp: "2026-10-09T13:44:00.000Z",
   },
   {
     id: "th-init-2",
@@ -52,7 +52,7 @@ const FALLBACK_THREAT_POOL: LiveThreatItem[] = [
     risk_score: 98,
     risk_level: "CRITICAL",
     detection_method: "High-Risk Disposable TLD (.space) with Phishing Keyword Detection",
-    timestamp: new Date(Date.now() - 15000).toISOString(),
+    timestamp: "2026-10-09T13:43:45.000Z",
   },
   {
     id: "th-init-3",
@@ -62,7 +62,7 @@ const FALLBACK_THREAT_POOL: LiveThreatItem[] = [
     risk_score: 92,
     risk_level: "CRITICAL",
     detection_method: "Telegram Threat Interceptor: Telegram Task & Rating Job Pyramid Lure",
-    timestamp: new Date(Date.now() - 45000).toISOString(),
+    timestamp: "2026-10-09T13:43:15.000Z",
   },
   {
     id: "th-init-4",
@@ -72,7 +72,7 @@ const FALLBACK_THREAT_POOL: LiveThreatItem[] = [
     risk_score: 95,
     risk_level: "CRITICAL",
     detection_method: "Brand Impersonation & Phishing Keyword Harvest (Target: SBI)",
-    timestamp: new Date(Date.now() - 85000).toISOString(),
+    timestamp: "2026-10-09T13:42:35.000Z",
   },
   {
     id: "th-init-5",
@@ -82,7 +82,7 @@ const FALLBACK_THREAT_POOL: LiveThreatItem[] = [
     risk_score: 97,
     risk_level: "CRITICAL",
     detection_method: "Telegram Threat Interceptor: Telegram Impersonation & Session Hijack Bot",
-    timestamp: new Date(Date.now() - 120000).toISOString(),
+    timestamp: "2026-10-09T13:42:00.000Z",
   },
   {
     id: "th-init-6",
@@ -92,7 +92,7 @@ const FALLBACK_THREAT_POOL: LiveThreatItem[] = [
     risk_score: 94,
     risk_level: "CRITICAL",
     detection_method: "Brand Impersonation & Phishing Keyword Harvest (Target: PAYTM)",
-    timestamp: new Date(Date.now() - 180000).toISOString(),
+    timestamp: "2026-10-09T13:41:00.000Z",
   },
 ];
 
@@ -101,7 +101,12 @@ export function LiveThreatStream({ onSelectThreat, maxDisplay = 6 }: LiveThreatS
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const eventSourceRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -240,8 +245,8 @@ export function LiveThreatStream({ onSelectThreat, maxDisplay = 6 }: LiveThreatS
         </div>
       </div>
 
-      {/* Threats Ticker List */}
-      <div className="mt-4 space-y-2.5">
+      {/* Threats Ticker List with balanced scrollable height */}
+      <div className="mt-4 space-y-2.5 max-h-[560px] overflow-y-auto pr-1.5 scrollbar-thin">
         {threats.slice(0, maxDisplay).map((item, idx) => (
           <div
             key={item.id || idx}
@@ -292,8 +297,10 @@ export function LiveThreatStream({ onSelectThreat, maxDisplay = 6 }: LiveThreatS
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-[11px] text-ink/40 dark:text-paper/40">
-                  <Clock className="w-3 h-3" />
-                  <span>{getTimeAgo(item.timestamp)}</span>
+                  <Clock className="w-3 h-3 shrink-0" />
+                  <span suppressHydrationWarning>
+                    {isMounted ? getTimeAgo(item.timestamp) : "recently"}
+                  </span>
                 </div>
               </div>
             </div>

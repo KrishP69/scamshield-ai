@@ -5,6 +5,9 @@ from app.core.logging import logger
 from app.modules.base import DetectionModule, ScanContext
 from app.modules.link_scanner import link_scanner
 from app.modules.scam_guardian.guardian import scam_guardian
+from app.modules.file_scanner import apk_profiler
+from app.modules.telegram_bot_scanner import telegram_bot_scanner
+from app.modules.voice_verifier import voice_verifier
 from app.orchestrator.events import event_broadcaster
 from app.preprocess.clean import clean_text
 from app.preprocess.entities import extract_all_entities
@@ -21,7 +24,13 @@ class ScanOrchestrator:
 
     def __init__(self):
         # Parallel active detection modules
-        self.modules: List[DetectionModule] = [scam_guardian, link_scanner]
+        self.modules: List[DetectionModule] = [
+            scam_guardian,
+            link_scanner,
+            apk_profiler,
+            telegram_bot_scanner,
+            voice_verifier,
+        ]
 
     async def execute_scan(
         self,

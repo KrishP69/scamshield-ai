@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from apps.api.app.main import app
+from app.main import app
 from app.modules.screenshot_inspector import inspect_screenshot_banner, generate_preset_screenshot
 
 

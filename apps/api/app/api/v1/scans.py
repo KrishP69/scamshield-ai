@@ -147,17 +147,19 @@ async def scan_screenshot_banner(
     request: Request,
     file: Optional[UploadFile] = File(None),
     image_base64: Optional[str] = Form(None),
+    image_url: Optional[str] = Form(None),
     preset: Optional[str] = Form(None),
     text_hint: Optional[str] = Form(None),
 ) -> Dict[str, Any]:
     """
     Forensic analysis of suspicious screenshots, phishing posters, and absurd deal banners.
-    Identifies credential-theft traps (e.g. fake free game currency asking for Instagram login),
-    fake lottery winners, task scams, and account takeover phishing.
+    Supports file upload, base64 data, preset archetypes, or direct screenshot image URL/link.
     """
     await check_rate_limit(request)
     from app.modules.screenshot_inspector import inspect_screenshot_banner
+    from app.core.logging import logger
     import base64
+    import httpx
 
     image_bytes = None
     filename = "uploaded_screenshot.png"
@@ -174,11 +176,24 @@ async def scan_screenshot_banner(
             filename = "pasted_screenshot.png"
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid base64 screenshot data")
+    elif image_url:
+        image_url_str = image_url.strip()
+        filename = image_url_str.split("/")[-1].split("?")[0] or "link_screenshot.png"
+        try:
+            async with httpx.AsyncClient(timeout=8.0, follow_redirects=True) as client:
+                res = await client.get(image_url_str)
+                if res.status_code == 200 and len(res.content) > 0:
+                    image_bytes = res.content
+        except Exception as e:
+            logger.warning(f"Could not fetch screenshot from image_url {image_url_str}: {e}")
+        
+        if not text_hint:
+            text_hint = f"Screenshot URL: {image_url_str}"
 
-    if not image_bytes and not preset:
+    if not image_bytes and not preset and not image_url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No screenshot or preset provided. Please upload an image file or choose a preset.",
+            detail="No screenshot, URL, or preset provided. Please upload an image, enter a link, or choose a preset.",
         )
 
     result = inspect_screenshot_banner(
@@ -187,6 +202,10 @@ async def scan_screenshot_banner(
         filename=filename,
         preset=preset,
     )
+
+    if image_url and not result.get("preview_image_url"):
+        result["preview_image_url"] = image_url
+
     return result
 
 

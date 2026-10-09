@@ -22,6 +22,7 @@ import {
   RefreshCw,
   Info,
 } from "lucide-react";
+import { playRadarPing, playThreatAlert, playCleanChime, playCyberHover, playCyberClick } from "@/lib/audio";
 
 interface RedFlag {
   severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
@@ -108,6 +109,7 @@ export function ScreenshotInspector() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [textHint, setTextHint] = useState<string>("");
+  const [imageUrlInput, setImageUrlInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<InspectorResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -121,8 +123,10 @@ export function ScreenshotInspector() {
   const analyzePreset = useCallback(async (presetId: string) => {
     setActivePreset(presetId);
     setSelectedFile(null);
+    setImageUrlInput("");
     setIsLoading(true);
     setErrorMsg("");
+    playRadarPing();
 
     try {
       const formData = new FormData();
@@ -141,6 +145,12 @@ export function ScreenshotInspector() {
       setResult(data);
       setPreviewUrl(data.preview_image_url);
       setTextHint(data.extracted_text);
+
+      if (data.risk_score >= 50) {
+        playThreatAlert();
+      } else {
+        playCleanChime();
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to inspect preset banner");
     } finally {
@@ -152,6 +162,7 @@ export function ScreenshotInspector() {
   const analyzeCustomImage = useCallback(async (file: File, hint: string) => {
     setIsLoading(true);
     setErrorMsg("");
+    playRadarPing();
 
     try {
       const formData = new FormData();
@@ -172,8 +183,58 @@ export function ScreenshotInspector() {
       const data: InspectorResult = await res.json();
       setResult(data);
       setPreviewUrl(data.preview_image_url || URL.createObjectURL(file));
+
+      if (data.risk_score >= 50) {
+        playThreatAlert();
+      } else {
+        playCleanChime();
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to analyze uploaded screenshot");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [apiUrl]);
+
+  // Analyze screenshot from image URL/link
+  const analyzeImageUrl = useCallback(async (url: string, hint: string) => {
+    if (!url.trim()) return;
+    setIsLoading(true);
+    setErrorMsg("");
+    setActivePreset("");
+    setSelectedFile(null);
+    playRadarPing();
+
+    try {
+      const formData = new FormData();
+      formData.append("image_url", url.trim());
+      if (hint.trim()) {
+        formData.append("text_hint", hint.trim());
+      }
+
+      const res = await fetch(`${apiUrl}/api/v1/scans/screenshot-inspector`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Link inspection failed: ${res.statusText}`);
+      }
+
+      const data: InspectorResult = await res.json();
+      setResult(data);
+      setPreviewUrl(data.preview_image_url || url);
+      if (data.extracted_text) {
+        setTextHint(data.extracted_text);
+      }
+
+      if (data.risk_score >= 50) {
+        playThreatAlert();
+      } else {
+        playCleanChime();
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to analyze screenshot link");
     } finally {
       setIsLoading(false);
     }
@@ -300,54 +361,135 @@ export function ScreenshotInspector() {
         </div>
       </div>
 
-      {/* 3. Custom Upload & Text Refinement Box */}
-      <div className="p-5 rounded-2xl bg-paper-50 dark:bg-ink-900/60 border border-ink/10 dark:border-paper/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 hover:border-ultramarine font-semibold text-xs text-ink dark:text-paper shadow-sm transition-all"
-          >
-            <Upload className="w-4 h-4 text-ultramarine dark:text-cyan-400" />
-            <span>Upload Your Own Screenshot</span>
-          </button>
-          {selectedFile && (
-            <span className="text-xs font-mono text-ink/60 dark:text-paper/60 truncate max-w-xs">
-              {selectedFile.name}
-            </span>
-          )}
+      {/* 3. Custom Upload, Screenshot URL & Text Refinement Box */}
+      <div className="space-y-3">
+        <div className="p-5 rounded-2xl bg-paper-50 dark:bg-ink-900/60 border border-ink/10 dark:border-paper/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onMouseEnter={playCyberHover}
+              onClick={() => {
+                playCyberClick();
+                fileInputRef.current?.click();
+              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 hover:border-ultramarine font-semibold text-xs text-ink dark:text-paper shadow-sm transition-all"
+            >
+              <Upload className="w-4 h-4 text-ultramarine dark:text-cyan-400" />
+              <span>Upload Your Own Screenshot</span>
+            </button>
+            {selectedFile && (
+              <span className="text-xs font-mono text-ink/60 dark:text-paper/60 truncate max-w-xs">
+                {selectedFile.name}
+              </span>
+            )}
+          </div>
+
+          {/* Text Hint Input */}
+          <div className="flex items-center gap-2 w-full sm:w-auto flex-1 max-w-lg">
+            <input
+              type="text"
+              value={textHint}
+              onChange={(e) => setTextHint(e.target.value)}
+              placeholder="Text visible on banner (e.g. Free Fire 50,000 Diamonds Enter Insta ID Pass)"
+              className="w-full px-3.5 py-2 text-xs rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-ultramarine"
+            />
+            <button
+              type="button"
+              onMouseEnter={playCyberHover}
+              onClick={() => {
+                playCyberClick();
+                if (imageUrlInput.trim()) {
+                  analyzeImageUrl(imageUrlInput, textHint);
+                } else if (selectedFile) {
+                  analyzeCustomImage(selectedFile, textHint);
+                } else if (activePreset) {
+                  analyzePreset(activePreset);
+                }
+              }}
+              disabled={isLoading}
+              className="px-3.5 py-2 rounded-xl bg-ultramarine hover:bg-ultramarine-dark text-white text-xs font-semibold shrink-0 disabled:opacity-50"
+            >
+              {isLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : "Re-Inspect"}
+            </button>
+          </div>
         </div>
 
-        {/* Text Hint Input */}
-        <div className="flex items-center gap-2 w-full sm:w-auto flex-1 max-w-lg">
-          <input
-            type="text"
-            value={textHint}
-            onChange={(e) => setTextHint(e.target.value)}
-            placeholder="Text visible on banner (e.g. Free Fire 50,000 Diamonds Enter Insta ID Pass)"
-            className="w-full px-3.5 py-2 text-xs rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-ultramarine"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              if (selectedFile) {
-                analyzeCustomImage(selectedFile, textHint);
-              } else if (activePreset) {
-                analyzePreset(activePreset);
-              }
-            }}
-            disabled={isLoading}
-            className="px-3.5 py-2 rounded-xl bg-ultramarine hover:bg-ultramarine-dark text-white text-xs font-semibold shrink-0 disabled:opacity-50"
-          >
-            {isLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : "Re-Inspect"}
-          </button>
+        {/* Direct Screenshot Link / Image URL Bar */}
+        <div className="p-4 rounded-2xl bg-paper-50 dark:bg-ink-900/40 border border-ink/10 dark:border-paper/10 space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-ink/60 dark:text-paper/60 flex items-center gap-1.5">
+              <Zap className="w-3 h-3 text-rose-500" />
+              <span>Or Inspect via Sample Screenshot Link (URL):</span>
+            </span>
+
+            {/* Quick Sample Link Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {[
+                {
+                  label: "Free Fire 50K Diamonds Link",
+                  url: "https://raw.githubusercontent.com/scamshield/samples/main/free_fire_diamonds_insta_trap.png",
+                  hint: "Free Fire 50,000 Diamonds Claim Now Enter Instagram ID & Password",
+                },
+                {
+                  label: "Insta Copyright Notice Link",
+                  url: "https://raw.githubusercontent.com/scamshield/samples/main/instagram_copyright_strike_appeal.png",
+                  hint: "Instagram Copyright Infringement Notice 24 Hours Account Deletion Appeal Password",
+                },
+                {
+                  label: "iPhone 16 Winner Link",
+                  url: "https://raw.githubusercontent.com/scamshield/samples/main/iphone16_lucky_winner_customs.png",
+                  hint: "Congratulations You Won iPhone 16 Pro Pay Rs 499 Customs Insurance Delivery",
+                },
+              ].map((sample) => (
+                <button
+                  key={sample.label}
+                  type="button"
+                  onMouseEnter={playCyberHover}
+                  onClick={() => {
+                    playCyberClick();
+                    setImageUrlInput(sample.url);
+                    setTextHint(sample.hint);
+                    analyzeImageUrl(sample.url, sample.hint);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-white dark:bg-ink-800 border border-ink/10 dark:border-paper/10 hover:border-ultramarine text-[11px] font-medium text-ink/75 dark:text-paper/75 transition-all"
+                >
+                  {sample.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="url"
+              value={imageUrlInput}
+              onChange={(e) => setImageUrlInput(e.target.value)}
+              placeholder="Paste public screenshot URL (e.g. https://.../screenshot.png or image link)"
+              className="w-full px-3.5 py-2 text-xs font-mono rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-ultramarine"
+            />
+            <button
+              type="button"
+              onMouseEnter={playCyberHover}
+              onClick={() => {
+                playCyberClick();
+                if (imageUrlInput.trim()) {
+                  analyzeImageUrl(imageUrlInput, textHint);
+                }
+              }}
+              disabled={isLoading || !imageUrlInput.trim()}
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shrink-0 disabled:opacity-50 transition-all flex items-center gap-1.5"
+            >
+              <span>Inspect SS Link</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 

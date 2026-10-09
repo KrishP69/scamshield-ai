@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import { cn } from "@/lib/utils";
+import { playCyberHover, playCyberClick } from "@/lib/audio";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
@@ -8,7 +11,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", children, ...props }, ref) => {
+  ({ className, variant = "primary", size = "md", children, onMouseEnter, onClick, ...props }, ref) => {
     const baseStyles =
       "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none select-none";
 
@@ -26,9 +29,21 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "h-12 px-6 text-base font-semibold",
     };
 
+    const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+      playCyberHover();
+      onMouseEnter?.(e);
+    };
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      playCyberClick();
+      onClick?.(e);
+    };
+
     return (
       <button
         ref={ref}
+        onMouseEnter={handleMouseEnter}
+        onClick={handleClick}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         {...props}
       >

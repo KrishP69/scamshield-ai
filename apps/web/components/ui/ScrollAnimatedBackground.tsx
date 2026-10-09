@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { ShieldAlert, ShieldCheck, Eye, Lock, Activity, ChevronUp } from "lucide-react";
+import { playPhaseWhoosh, playRadarPing, playCyberHover, playCyberClick } from "@/lib/audio";
+import { AudioToggle } from "./AudioToggle";
 
 interface PhaseConfig {
   name: string;
@@ -68,6 +70,8 @@ export function ScrollAnimatedBackground() {
   const [scrollY, setScrollY] = useState<number>(0);
   const [isClient, setIsClient] = useState<boolean>(false);
 
+  const prevPhaseRef = React.useRef<number>(0);
+
   useEffect(() => {
     setIsClient(true);
 
@@ -82,14 +86,21 @@ export function ScrollAnimatedBackground() {
       setScrollProgress(progress);
 
       // 4 Continuous scroll stages across 0% to 100%
+      let nextPhase = 0;
       if (progress < 0.22) {
-        setCurrentPhaseIndex(0);
+        nextPhase = 0;
       } else if (progress < 0.50) {
-        setCurrentPhaseIndex(1);
+        nextPhase = 1;
       } else if (progress < 0.75) {
-        setCurrentPhaseIndex(2);
+        nextPhase = 2;
       } else {
-        setCurrentPhaseIndex(3);
+        nextPhase = 3;
+      }
+
+      if (nextPhase !== prevPhaseRef.current) {
+        prevPhaseRef.current = nextPhase;
+        setCurrentPhaseIndex(nextPhase);
+        playPhaseWhoosh();
       }
     };
 
@@ -102,6 +113,7 @@ export function ScrollAnimatedBackground() {
   const Icon = activePhase.icon;
 
   const scrollToPhase = (index: number) => {
+    playRadarPing();
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     if (docHeight <= 0) return;
     const targetPercentages = [0, 0.32, 0.62, 0.88];
@@ -295,12 +307,14 @@ export function ScrollAnimatedBackground() {
           </div>
         </div>
 
-        {/* Phase Step Navigation Dots */}
-        <div className="flex flex-col gap-1.5 pl-2 border-l border-ink/10 dark:border-paper/10">
+        {/* Phase Step Navigation Dots & Audio Controls */}
+        <div className="flex flex-col items-center gap-1.5 pl-2 border-l border-ink/10 dark:border-paper/10">
+          <AudioToggle compact={true} />
           {PHASES.map((p, idx) => (
             <button
               key={p.code}
               type="button"
+              onMouseEnter={playCyberHover}
               onClick={() => scrollToPhase(idx)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 currentPhaseIndex === idx

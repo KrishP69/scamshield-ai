@@ -6,8 +6,10 @@ MODULE_WEIGHTS: Dict[str, float] = {
     "link_scanner": 1.00,
     "file_scanner": 1.00,
     "crypto_detector": 1.00,
+    "screenshot_inspector": 0.95,
+    "telegram_bot_scanner": 0.90,
     "scam_guardian": 0.85,
-    "voice_verifier": 0.70,
+    "voice_verifier": 0.85,
     "reverse_search": 0.60,
 }
 

@@ -29,10 +29,12 @@ async def adapter_status() -> Dict[str, Any]:
         "modules": {
             "scam_guardian": "active",
             "link_scanner": "active",
-            "reverse_search": "active",
-            "crypto_detector": "active",
+            "screenshot_inspector": "active",
+            "telegram_bot_scanner": "active",
             "file_scanner": "active",
             "voice_verifier": "active",
+            "reverse_search": "active",
+            "crypto_detector": "active",
             "scoring_engine": "active",
         },
         "intel_adapters": {

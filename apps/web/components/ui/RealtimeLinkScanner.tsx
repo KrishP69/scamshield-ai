@@ -18,6 +18,7 @@ import {
   Lock,
 } from "lucide-react";
 import { Button } from "./Button";
+import { playRadarPing, playThreatAlert, playCleanChime, playCyberHover } from "@/lib/audio";
 
 const SAMPLE_LINKS = [
   {
@@ -96,6 +97,7 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
     setLoading(true);
     setError(null);
     setResult(null);
+    playRadarPing();
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -112,6 +114,13 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
 
       const data: RealtimeScanResult = await res.json();
       setResult(data);
+
+      if (data.risk_score >= 50) {
+        playThreatAlert();
+      } else {
+        playCleanChime();
+      }
+
       if (onScanComplete) {
         onScanComplete(data);
       }

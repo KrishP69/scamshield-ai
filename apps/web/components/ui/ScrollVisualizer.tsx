@@ -16,6 +16,7 @@ import {
   Activity,
   Lock,
 } from "lucide-react";
+import { playCyberHover, playCyberClick, playRadarPing } from "@/lib/audio";
 
 interface VisualStage {
   id: string;
@@ -207,7 +208,11 @@ export function ScrollVisualizer() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setIsAutoLooping(!isAutoLooping)}
+              onMouseEnter={playCyberHover}
+              onClick={() => {
+                playCyberClick();
+                setIsAutoLooping(!isAutoLooping);
+              }}
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 text-xs font-semibold text-ink dark:text-paper hover:border-ultramarine shadow-sm transition-all"
             >
               {isAutoLooping ? (
@@ -239,7 +244,9 @@ export function ScrollVisualizer() {
               <button
                 key={stage.id}
                 type="button"
+                onMouseEnter={playCyberHover}
                 onClick={() => {
+                  playRadarPing();
                   setActiveStageIndex(idx);
                   setIsAutoLooping(false);
                 }}

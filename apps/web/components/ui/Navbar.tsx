@@ -6,6 +6,7 @@ import { ShieldAlert, Menu, X, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Button } from "./Button";
+import { AudioToggle } from "./AudioToggle";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -66,6 +67,7 @@ export function Navbar() {
 
           {/* Actions & Utilities */}
           <div className="hidden sm:flex items-center gap-2 shrink-0">
+            <AudioToggle />
             <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/scan">

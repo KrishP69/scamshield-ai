@@ -22,6 +22,7 @@ import { ComparisonTable } from "@/components/ui/ComparisonTable";
 import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
+import { AiImageDetector } from "@/components/ui/AiImageDetector";
 
 export default function HomePage() {
   return (
@@ -49,15 +50,34 @@ export default function HomePage() {
                 Paste a Facebook or Telegram message, link, profile, or file. ScamShield reveals the hidden psychological coercion, malicious links, and dangerous permissions in seconds.
               </p>
 
-              {/* Platform Badges */}
-              <div className="flex items-center gap-3 text-xs font-medium text-ink/60 dark:text-paper/60">
-                <span>Optimized vectors:</span>
-                <span className="px-2.5 py-1 rounded-md bg-paper-200 dark:bg-ink-800 text-ink dark:text-paper">
-                  Facebook Marketplace & Groups
-                </span>
-                <span className="px-2.5 py-1 rounded-md bg-paper-200 dark:bg-ink-800 text-ink dark:text-paper">
-                  Telegram Channels & DMs
-                </span>
+              {/* Platform Badges & Quick Tools */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 text-xs font-medium text-ink/60 dark:text-paper/60">
+                  <span>Optimized vectors:</span>
+                  <span className="px-2.5 py-1 rounded-md bg-paper-200 dark:bg-ink-800 text-ink dark:text-paper">
+                    Facebook Marketplace & Groups
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-paper-200 dark:bg-ink-800 text-ink dark:text-paper">
+                    Telegram Channels & DMs
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <Link
+                    href="/radar"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs border border-emerald-500/25 transition-all"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>24x7 Telegram Threat Radar</span>
+                  </Link>
+                  <Link
+                    href="/ai-detector"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-600 dark:text-violet-400 font-semibold text-xs border border-violet-500/25 transition-all"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+                    <span>AI Image & Deepfake Detector</span>
+                  </Link>
+                </div>
               </div>
 
               {/* Interactive Live Scanner Box */}
@@ -66,7 +86,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Hero Poster (Phase 4 3D placeholder) */}
+            {/* Right Hero Poster (3D Cyber Shield) */}
             <div className="lg:col-span-5 flex justify-center">
               <HeroPoster />
             </div>
@@ -100,6 +120,50 @@ export default function HomePage() {
             <div className="lg:col-span-5">
               <LiveThreatStream maxDisplay={5} />
             </div>
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/radar"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs border border-emerald-500/25 transition-all shadow-sm hover:shadow-md"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Open Dedicated 24x7 Live Threat Telemetry Radar Page</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* AI-Generated Image & Deepfake Forensics Section */}
+      <section className="py-14 sm:py-20 bg-paper dark:bg-ink-950 border-b border-ink/10 dark:border-paper/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 text-xs font-semibold mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+              <span>Multi-Signal Deepfake Intelligence</span>
+            </div>
+            <h2 className="font-display font-bold text-2xl sm:text-4xl text-ink dark:text-paper tracking-tight">
+              AI Image & Deepfake Forensic Detector
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-ink/75 dark:text-paper/75 leading-relaxed">
+              Verify suspected Midjourney profile deepfakes, synthetic payment receipts, and manipulated avatars with 2D Fast Fourier Transform frequency residuals and Error Level Analysis.
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <AiImageDetector />
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/ai-detector"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 text-violet-600 dark:text-violet-400 font-semibold text-xs border border-violet-500/25 transition-all shadow-sm hover:shadow-md"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+              <span>Open Fullscreen AI Image Forensic Lab Page</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </section>

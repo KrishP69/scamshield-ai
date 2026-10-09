@@ -44,7 +44,7 @@ export default function ShareRedirectPage() {
           <h1 className="font-display font-bold text-xl mb-2">Share Link Unavailable</h1>
           <p className="text-xs text-ink/70 dark:text-paper/70 leading-relaxed mb-6">{error}</p>
           <div className="flex gap-2 justify-center">
-            <Button onClick={() => router.push("/scan")}>Scan a Message</Button>
+            <Button onClick={() => router.push("/scan")}>Open Threat Scanner</Button>
             <Link href="/" className="px-4 py-2 text-xs font-semibold text-ink/75 dark:text-paper/75 hover:text-ink">
               Home
             </Link>

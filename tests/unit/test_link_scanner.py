@@ -97,3 +97,36 @@ def test_live_threat_feed_buffer():
     assert "risk_score" in first
     assert "detection_method" in first
     assert "timestamp" in first
+
+
+@pytest.mark.asyncio
+async def test_telegram_fishy_links_detection():
+    # 1. Telegram Crypto Multiplier
+    res_crypto = await analyze_url_realtime("https://t.me/crypto_vip_pumps")
+    assert res_crypto["is_fishy"] is True
+    assert res_crypto["risk_score"] >= 85
+    assert "Telegram" in res_crypto["primary_detection_method"]
+
+    # 2. Telegram TON Wallet Drainer
+    res_ton = await analyze_url_realtime("https://t.me/claim_ton_airdrop")
+    assert res_ton["is_fishy"] is True
+    assert res_ton["risk_score"] >= 85
+
+    # 3. Telegram Job Task Scam
+    res_job = await analyze_url_realtime("https://t.me/dailyearn")
+    assert res_job["is_fishy"] is True
+
+    # 4. Telegram Verification Phishing Bot
+    res_bot = await analyze_url_realtime("https://t.me/TelegramVerificationBot")
+    assert res_bot["is_fishy"] is True
+
+    # 5. Telegram Lookalike Domain
+    res_lookalike = await analyze_url_realtime("https://telegram-login-web.xyz/auth")
+    assert res_lookalike["is_fishy"] is True
+    assert res_lookalike["risk_score"] >= 90
+    assert "Lookalike" in res_lookalike["primary_detection_method"] or "Impersonation" in res_lookalike["primary_detection_method"]
+
+    # 6. Benign official channel
+    res_clean = await analyze_url_realtime("https://t.me/telegram")
+    assert res_clean["is_fishy"] is False
+

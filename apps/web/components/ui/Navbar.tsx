@@ -11,14 +11,14 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
+    { label: "24x7 Radar", href: "/radar", badge: "LIVE" },
+    { label: "AI Image Forensics", href: "/ai-detector", badge: "AI" },
     { label: "Product", href: "/product" },
     { label: "Modules", href: "/modules" },
     { label: "How It Works", href: "/how-it-works" },
-    { label: "Research", href: "/research" },
     { label: "Learn", href: "/learn" },
     { label: "Safety", href: "/safety" },
     { label: "Docs", href: "/docs" },
-    { label: "About", href: "/about" },
   ];
 
   return (
@@ -49,20 +49,38 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-1.5 text-xs font-medium text-ink/75 dark:text-paper/75 hover:text-ink dark:hover:text-paper hover:bg-paper-200 dark:hover:bg-ink-700 rounded-md transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-ink/75 dark:text-paper/75 hover:text-ink dark:hover:text-paper hover:bg-paper-200 dark:hover:bg-ink-700 rounded-md transition-colors"
               >
-                {link.label}
+                <span>{link.label}</span>
+                {link.badge && (
+                  <span
+                    className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
+                      link.badge === "LIVE"
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
+                        : "bg-violet-500/15 text-violet-600 dark:text-violet-400 border border-violet-500/30"
+                    }`}
+                  >
+                    {link.badge}
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
 
           {/* Actions & Utilities */}
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2.5">
+            <Link
+              href="/radar"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/20 transition-all"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Live Radar</span>
+            </Link>
             <LanguageSwitcher />
             <ThemeToggle />
             <Link href="/scan">
-              <Button size="sm" className="gap-1.5 font-medium">
-                <span>Check a Message</span>
+              <Button size="sm" className="gap-1.5 font-medium shadow-sm hover:shadow-md transition-all">
+                <span>Threat Scanner</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
@@ -91,9 +109,14 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-sm font-medium text-ink/80 dark:text-paper/80 hover:bg-paper-200 dark:hover:bg-ink-700"
+              className="flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-ink/80 dark:text-paper/80 hover:bg-paper-200 dark:hover:bg-ink-700"
             >
-              {link.label}
+              <span>{link.label}</span>
+              {link.badge && (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold">
+                  {link.badge}
+                </span>
+              )}
             </Link>
           ))}
           <div className="pt-4 border-t border-ink/10 dark:border-paper/10 flex flex-col gap-3">
@@ -101,9 +124,15 @@ export function Navbar() {
               <span className="text-xs text-ink/60 dark:text-paper/60">Language</span>
               <LanguageSwitcher />
             </div>
+            <Link href="/radar" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="secondary" className="w-full justify-center gap-2 text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>24x7 Live Threat Radar</span>
+              </Button>
+            </Link>
             <Link href="/scan" onClick={() => setMobileMenuOpen(false)}>
               <Button className="w-full justify-center gap-2">
-                <span>Check a Message</span>
+                <span>Threat Scanner</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>

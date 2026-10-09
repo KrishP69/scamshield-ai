@@ -18,6 +18,7 @@ import {
   Sparkles,
   Radio,
   ExternalLink,
+  Eye,
 } from "lucide-react";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ThreatFactorsSection } from "@/components/ui/ThreatFactorsSection";
+import { AiImageDetector } from "@/components/ui/AiImageDetector";
 
 const PRESET_MESSAGES = [
   {
@@ -60,7 +62,7 @@ const PRESET_MESSAGES = [
 ];
 
 export default function ScanPage() {
-  const [activeTab, setActiveTab] = useState("message");
+  const [activeTab, setActiveTab] = useState("link");
   const [platform, setPlatform] = useState("telegram");
   const [content, setContent] = useState("");
   const [scanning, setScanning] = useState(false);
@@ -68,13 +70,12 @@ export default function ScanPage() {
   const [selectedThreatUrl, setSelectedThreatUrl] = useState<string>("");
 
   const tabs = [
-    { id: "message", label: "Message Text", icon: FileText },
-    { id: "screenshot", label: "Screenshot", icon: ImageIcon },
-    { id: "link", label: "Suspicious Link", icon: Link2 },
+    { id: "link", label: "Telegram & Fishy Link Interceptor", icon: Link2, badge: "REALTIME" },
+    { id: "ai_image", label: "AI Image & Deepfake Forensics", icon: Eye, badge: "AI LAB" },
+    { id: "message", label: "Chat & Social Engineering", icon: FileText },
     { id: "phone", label: "Phone / Profile", icon: Phone },
     { id: "crypto", label: "Crypto Wallet", icon: Coins },
     { id: "apk", label: "APK / File", icon: FileCode },
-    { id: "voice", label: "Voice Clip", icon: Mic },
   ];
 
   const handleScan = async (e: React.FormEvent) => {
@@ -258,7 +259,7 @@ export default function ScanPage() {
               </div>
             </div>
 
-            {/* Input Tabs */}
+            {/* Input Tabs with 3D aesthetic */}
             <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-none border-b border-ink/10 dark:border-paper/10 mb-6">
               {tabs.map((t) => {
                 const Icon = t.icon;
@@ -266,14 +267,25 @@ export default function ScanPage() {
                   <button
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                    className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                       activeTab === t.id
-                        ? "bg-ultramarine/10 text-ultramarine dark:text-ultramarine-light font-bold"
-                        : "text-ink/60 dark:text-paper/60 hover:text-ink dark:hover:text-paper"
+                        ? "bg-ultramarine text-white shadow-md scale-[1.02]"
+                        : "text-ink/70 dark:text-paper/70 bg-paper-100/60 dark:bg-ink-900/60 hover:bg-paper-200 dark:hover:bg-ink-900 border border-ink/10 dark:border-paper/10"
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className="w-4 h-4" />
                     <span>{t.label}</span>
+                    {t.badge && (
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
+                          activeTab === t.id
+                            ? "bg-white/20 text-white"
+                            : "bg-ultramarine/15 text-ultramarine dark:text-ultramarine-light"
+                        }`}
+                      >
+                        {t.badge}
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -285,6 +297,9 @@ export default function ScanPage() {
                 key={selectedThreatUrl || "realtime-link-scanner"}
                 initialUrl={selectedThreatUrl}
               />
+            ) : activeTab === "ai_image" ? (
+              /* AI Image Forensics Lab */
+              <AiImageDetector />
             ) : (
               /* Message & Other Tab Form */
               <form onSubmit={handleScan} className="space-y-4">
@@ -352,7 +367,7 @@ export default function ScanPage() {
             )}
 
             {/* Scan Result for Message Form */}
-            {activeTab !== "link" && result && (
+            {activeTab !== "link" && activeTab !== "ai_image" && result && (
               <div className="mt-8 pt-8 border-t border-ink/10 dark:border-paper/10 space-y-6">
                 {/* Result Header */}
                 <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-paper-50 dark:bg-ink-950 border border-ink/10 dark:border-paper/10">

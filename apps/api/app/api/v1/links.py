@@ -78,8 +78,56 @@ async def stream_live_threats():
         }
         yield f"data: {json.dumps(initial_payload)}\n\n"
 
-        # Continuous live stream generator
+        # Continuous 24x7 live stream generator with rich Telegram and web fraud vectors
         simulated_threat_pool = [
+            {
+                "display_domain": "telegram-claim-gifts.click",
+                "url": "https://telegram-claim-gifts.click/premium-claim",
+                "threat_type": "Telegram Phishing & Session Hijack",
+                "risk_score": 98,
+                "risk_level": "CRITICAL",
+                "detection_method": "High-Risk Disposable TLD (.click) with Urgent Social Engineering Terms",
+            },
+            {
+                "display_domain": "t.me/Binance_Airdrop_Bonus_Bot",
+                "url": "https://t.me/Binance_Airdrop_Bonus_Bot?start=claim500",
+                "threat_type": "Telegram Crypto Multiplier & Wallet Drainer",
+                "risk_score": 95,
+                "risk_level": "CRITICAL",
+                "detection_method": "Telegram Threat Interceptor: Telegram Fake Airdrop & Wallet Drainer",
+            },
+            {
+                "display_domain": "t.me/TelegramVerificationOfficialBot",
+                "url": "https://t.me/TelegramVerificationOfficialBot?auth=code",
+                "threat_type": "Telegram Impersonation & OTP Harvester",
+                "risk_score": 96,
+                "risk_level": "CRITICAL",
+                "detection_method": "Telegram Threat Interceptor: Telegram Impersonation & Session Hijack Bot",
+            },
+            {
+                "display_domain": "t.me/crypto_vip_pumps_daily",
+                "url": "https://t.me/crypto_vip_pumps_daily",
+                "threat_type": "Telegram VIP Signals 500% ROI Pump Scam",
+                "risk_score": 92,
+                "risk_level": "CRITICAL",
+                "detection_method": "Telegram Threat Interceptor: Telegram Crypto Multiplier & VIP Signal Fraud",
+            },
+            {
+                "display_domain": "t.me/youtube_task_daily_earn",
+                "url": "https://t.me/youtube_task_daily_earn",
+                "threat_type": "Telegram Task & Rating Job Pyramid Trap",
+                "risk_score": 91,
+                "risk_level": "CRITICAL",
+                "detection_method": "Telegram Threat Interceptor: Telegram Task & Rating Job Pyramid Lure",
+            },
+            {
+                "display_domain": "tg-free-nitro-airdrop.vip",
+                "url": "https://tg-free-nitro-airdrop.vip/claim",
+                "threat_type": "Telegram Lookalike / Nitro Drainer",
+                "risk_score": 97,
+                "risk_level": "CRITICAL",
+                "detection_method": "Telegram Brand Impersonation & Lookalike Spoofing on .vip",
+            },
             {
                 "display_domain": "sbi-quick-kyc-verify.top",
                 "url": "http://sbi-quick-kyc-verify.top/auth",
@@ -89,26 +137,10 @@ async def stream_live_threats():
                 "detection_method": "Target Brand Impersonation: [SBI] with Urgent Social Engineering Terms (.top)",
             },
             {
-                "display_domain": "telegram-claim-gifts.click",
-                "url": "https://telegram-claim-gifts.click/premium",
-                "threat_type": "Telegram Phishing & Session Hijack",
-                "risk_score": 93,
-                "risk_level": "CRITICAL",
-                "detection_method": "High-Risk Disposable TLD (.click) with Urgent Social Engineering Terms",
-            },
-            {
-                "display_domain": "169.254.169.254 (Cloud Metadata)",
-                "url": "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
-                "threat_type": "SSRF Cloud Metadata Exfiltration",
-                "risk_score": 99,
-                "risk_level": "CRITICAL",
-                "detection_method": "SSRF & Cloud Metadata Address Exfiltration Guard",
-            },
-            {
                 "display_domain": "paytm-instant-cashback.xyz",
                 "url": "http://paytm-instant-cashback.xyz/qr-collect",
                 "threat_type": "UPI Collect Request Fraud",
-                "risk_score": 91,
+                "risk_score": 94,
                 "risk_level": "CRITICAL",
                 "detection_method": "Brand Impersonation & Phishing Keyword Harvest (Target: PAYTM)",
             },
@@ -120,15 +152,39 @@ async def stream_live_threats():
                 "risk_level": "CRITICAL",
                 "detection_method": "Excessive Subdomain Nesting Depth & Brand Impersonation",
             },
+            {
+                "display_domain": "claim-ton-airdrop-bonus.space",
+                "url": "https://claim-ton-airdrop-bonus.space/connect",
+                "threat_type": "TON / Web3 Crypto Wallet Drainer",
+                "risk_score": 98,
+                "risk_level": "CRITICAL",
+                "detection_method": "High-Risk Disposable TLD (.space) with Phishing Keyword Detection",
+            },
+            {
+                "display_domain": "hdfc-netbanking-reward.xyz",
+                "url": "http://hdfc-netbanking-reward.xyz/login.php",
+                "threat_type": "NetBanking Credential Harvester",
+                "risk_score": 95,
+                "risk_level": "CRITICAL",
+                "detection_method": "Target Brand Impersonation: [HDFC] on Unofficial Host (.xyz)",
+            },
+            {
+                "display_domain": "t.me/lottery_kbc_official_claim",
+                "url": "https://t.me/lottery_kbc_official_claim",
+                "threat_type": "KBC Lottery Advance Fee Demand",
+                "risk_score": 93,
+                "risk_level": "CRITICAL",
+                "detection_method": "Telegram Threat Interceptor: Telegram Lottery & Advance Fee Fraud",
+            },
         ]
 
         while True:
-            await asyncio.sleep(6)
+            await asyncio.sleep(random.uniform(2.8, 4.5))
             sampled = random.choice(simulated_threat_pool)
             event_data = {
                 "type": "new_threat_detected",
                 "threat": {
-                    "id": f"th-stream-{random.randint(1000, 9999)}",
+                    "id": f"th-stream-{random.randint(10000, 99999)}",
                     "url": sampled["url"],
                     "display_domain": sampled["display_domain"],
                     "threat_type": sampled["threat_type"],

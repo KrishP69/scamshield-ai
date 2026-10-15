@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: scamshield-api
+    runtime: python
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        value: dGhpc19pc19hX2R1bW15XzMyX2J5dGVfZmVybmV0X2tleV9mb3JfZGV2IQ==
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./scamshield.db

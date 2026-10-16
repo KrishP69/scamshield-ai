@@ -41,6 +41,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { I18nProvider } from "@/lib/i18n";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,7 +54,7 @@ export default function RootLayout({
       className={`${bricolage.variable} ${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}
     >
       <body className="min-h-screen bg-paper text-ink dark:bg-[#090D1F] dark:text-paper selection:bg-ultramarine selection:text-white">
-        {children}
+        <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
   );

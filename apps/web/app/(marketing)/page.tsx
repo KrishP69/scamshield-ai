@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import {
@@ -25,8 +27,11 @@ import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ScreenshotInspector } from "@/components/ui/ScreenshotInspector";
 import { ScrollVisualizer } from "@/components/ui/ScrollVisualizer";
+import { useI18n } from "@/lib/i18n";
 
 export default function HomePage() {
+  const { t } = useI18n();
+
   return (
     <div>
       {/* 1. Hero Section */}
@@ -40,27 +45,29 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ultramarine/10 border border-ultramarine/20 text-ultramarine dark:text-ultramarine-light text-xs font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Explainable Threat Defense for Indian Digital Spaces</span>
+                <span>{t("hero.badge", "Explainable Threat Defense for Indian Digital Spaces")}</span>
               </div>
 
               <h1 className="font-display font-extrabold text-3xl sm:text-5xl lg:text-6xl text-ink dark:text-paper tracking-tight leading-[1.1]">
-                Know if it&apos;s a scam <br className="hidden sm:inline" />
-                <span className="text-ultramarine dark:text-ultramarine-light">before you reply.</span>
+                {t("hero.headline1", "Know if it's a scam")} <br className="hidden sm:inline" />
+                <span className="text-ultramarine dark:text-ultramarine-light">
+                  {t("hero.headline2", "before you reply.")}
+                </span>
               </h1>
 
               <p className="text-sm sm:text-base lg:text-lg text-ink/75 dark:text-paper/75 max-w-xl leading-relaxed">
-                Paste a Facebook or Telegram message, link, profile, or file. ScamShield reveals the hidden psychological coercion, malicious links, and dangerous permissions in seconds.
+                {t("hero.subline", "Paste a Facebook or Telegram message, link, profile, or file. ScamShield reveals the hidden psychological coercion, malicious links, and dangerous permissions in seconds.")}
               </p>
 
               {/* Platform Badges & Quick Tools */}
               <div className="space-y-2">
                 <div className="flex items-center gap-3 text-xs font-medium text-ink/60 dark:text-paper/60">
-                  <span>Optimized vectors:</span>
+                  <span>{t("hero.optimizedVectors", "Optimized vectors:")}</span>
                   <span className="px-2.5 py-1 rounded-md bg-paper-200 dark:bg-ink-800 text-ink dark:text-paper">
-                    Facebook Marketplace & Groups
+                    {t("hero.fbMarketplace", "Facebook Marketplace & Groups")}
                   </span>
                   <span className="px-2.5 py-1 rounded-md bg-paper-200 dark:bg-ink-800 text-ink dark:text-paper">
-                    Telegram Channels & DMs
+                    {t("hero.telegramChannels", "Telegram Channels & DMs")}
                   </span>
                 </div>
 
@@ -70,14 +77,14 @@ export default function HomePage() {
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs border border-emerald-500/25 transition-all"
                   >
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>24x7 Telegram Threat Radar</span>
+                    <span>{t("hero.radarBtn", "24x7 Telegram Threat Radar")}</span>
                   </Link>
                   <Link
                     href="/screenshot-inspector"
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-semibold text-xs border border-rose-500/25 transition-all"
                   >
                     <Zap className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Fishy Screenshot & Deal Inspector</span>
+                    <span>{t("hero.screenshotBtn", "Fishy Screenshot & Deal Inspector")}</span>
                   </Link>
                 </div>
               </div>

@@ -7,16 +7,18 @@ import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Button } from "./Button";
 import { AudioToggle } from "./AudioToggle";
+import { useI18n } from "@/lib/i18n";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useI18n();
 
   const navLinks = [
-    { label: "24x7 Radar", href: "/radar", badge: "LIVE" },
-    { label: "Screenshot Inspector", href: "/screenshot-inspector", badge: "NEW" },
-    { label: "Modules", href: "/modules" },
-    { label: "How It Works", href: "/how-it-works" },
-    { label: "Docs", href: "/docs" },
+    { label: t("nav.radar", "24x7 Radar"), href: "/radar", badge: "LIVE" },
+    { label: t("nav.screenshotInspector", "Screenshot Inspector"), href: "/screenshot-inspector", badge: "NEW" },
+    { label: t("nav.modules", "Modules"), href: "/modules" },
+    { label: t("nav.howItWorks", "How It Works"), href: "/how-it-works" },
+    { label: t("nav.docs", "Docs"), href: "/docs" },
   ];
 
   return (
@@ -36,7 +38,7 @@ export function Navbar() {
                 ScamShield AI
               </span>
               <span className="text-[10px] text-ink/60 dark:text-paper/60 leading-none">
-                Explainable Threat Defense
+                {t("nav.tagline", "Explainable Threat Defense")}
               </span>
             </div>
           </Link>
@@ -72,7 +74,7 @@ export function Navbar() {
             <ThemeToggle />
             <Link href="/scan">
               <Button size="sm" className="gap-1.5 font-semibold shadow-sm hover:shadow-md transition-all">
-                <span>Threat Scanner</span>
+                <span>{t("nav.threatScanner", "Threat Scanner")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </Link>

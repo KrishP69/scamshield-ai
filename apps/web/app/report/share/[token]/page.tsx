@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { resilientFetch } from "@/lib/api";
 
 export default function ShareRedirectPage() {
   const params = useParams();
@@ -17,8 +18,7 @@ export default function ShareRedirectPage() {
 
     const resolveShare = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const res = await fetch(`${apiUrl}/api/v1/reports/share/${token}`);
+        const res = await resilientFetch(`/api/v1/reports/share/${token}`, {}, 6000);
         if (!res.ok) {
           throw new Error("This shared report link has expired or is invalid.");
         }

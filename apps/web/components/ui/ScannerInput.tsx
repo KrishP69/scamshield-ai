@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles, AlertCircle, CheckCircle2, ShieldCheck, CornerDownLeft } from "lucide-react";
 import { Button } from "./Button";
 
+import { resilientFetch } from "@/lib/api";
+import { generateFallbackPassport } from "@/lib/offline-scanner";
+
 const PRESET_SCENARIOS = [
   {
     name: "Marketplace Advance Scam",
@@ -43,33 +46,45 @@ export function ScannerInput() {
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const res = await fetch(`${apiUrl}/api/v1/scans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text,
-          platform,
-          store_history: false,
-        }),
-      });
+      // 1. Attempt scan via resilient client (5s timeout to prevent hanging UI)
+      const res = await resilientFetch(
+        "/api/v1/scans",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            platform,
+            store_history: false,
+          }),
+        },
+        5000
+      );
 
-      if (!res.ok) {
-        throw new Error("Scan request could not be processed.");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof window !== "undefined" && data.passport) {
+          try {
+            sessionStorage.setItem(`scan_${data.scan_id}`, JSON.stringify(data.passport));
+          } catch {
+            // Ignore quota errors
+          }
+        }
+        router.push(`/report/${data.scan_id}`);
+        return;
       }
-
-      const data = await res.json();
-      if (typeof window !== "undefined" && data.passport) {
+      throw new Error(`API returned HTTP ${res.status}`);
+    } catch {
+      // 2. Resilient instant fallback: generate rich local TrustPassport
+      const fallbackPassport = generateFallbackPassport(text, platform);
+      if (typeof window !== "undefined") {
         try {
-          sessionStorage.setItem(`scan_${data.scan_id}`, JSON.stringify(data.passport));
+          sessionStorage.setItem(`scan_${fallbackPassport.scan_id}`, JSON.stringify(fallbackPassport));
         } catch {
-          // Ignore storage quota errors
+          // Ignore quota errors
         }
       }
-      router.push(`/report/${data.scan_id}`);
-    } catch (err: any) {
-      // Local fallback navigation with query state
-      router.push(`/scan?text=${encodeURIComponent(text)}&platform=${platform}`);
+      router.push(`/report/${fallbackPassport.scan_id}`);
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,23 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
       },
+      {
+        protocol: "https",
+        hostname: "scamshield-u6c4.onrender.com",
+      },
     ],
+  },
+  async rewrites() {
+    const backendUrl =
+      process.env.API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://scamshield-u6c4.onrender.com";
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${backendUrl.replace(/\/$/, "")}/api/v1/:path*`,
+      },
+    ];
   },
   webpack: (config) => {
     config.externals.push({

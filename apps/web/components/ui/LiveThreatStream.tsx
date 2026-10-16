@@ -15,6 +15,7 @@ import {
   Search,
   CheckCircle2,
 } from "lucide-react";
+import { getApiUrl, resilientFetch } from "@/lib/api";
 
 export interface LiveThreatItem {
   id: string;
@@ -109,12 +110,12 @@ export function LiveThreatStream({ onSelectThreat, maxDisplay = 6 }: LiveThreatS
   }, []);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiUrl = getApiUrl();
 
     // 1. Initial snapshot fetch
     const fetchInitialFeed = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/v1/links/live-feed?limit=${maxDisplay}`);
+        const res = await resilientFetch(`/api/v1/links/live-feed?limit=${maxDisplay}`, {}, 4000);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

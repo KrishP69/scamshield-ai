@@ -23,6 +23,7 @@ import {
   Info,
 } from "lucide-react";
 import { playRadarPing, playThreatAlert, playCleanChime, playCyberHover, playCyberClick } from "@/lib/audio";
+import { getApiUrl, resilientFetch } from "@/lib/api";
 
 interface RedFlag {
   severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
@@ -117,8 +118,6 @@ export function ScreenshotInspector() {
   const [copied, setCopied] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
   // Auto-analyze selected preset
   const analyzePreset = useCallback(async (presetId: string) => {
     setActivePreset(presetId);
@@ -132,10 +131,14 @@ export function ScreenshotInspector() {
       const formData = new FormData();
       formData.append("preset", presetId);
 
-      const res = await fetch(`${apiUrl}/api/v1/scans/screenshot-inspector`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await resilientFetch(
+        "/api/v1/scans/screenshot-inspector",
+        {
+          method: "POST",
+          body: formData,
+        },
+        8000
+      );
 
       if (!res.ok) {
         throw new Error(`Inspection failed: ${res.statusText}`);
@@ -156,7 +159,7 @@ export function ScreenshotInspector() {
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl]);
+  }, []);
 
   // Analyze custom uploaded image
   const analyzeCustomImage = useCallback(async (file: File, hint: string) => {
@@ -171,10 +174,14 @@ export function ScreenshotInspector() {
         formData.append("text_hint", hint.trim());
       }
 
-      const res = await fetch(`${apiUrl}/api/v1/scans/screenshot-inspector`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await resilientFetch(
+        "/api/v1/scans/screenshot-inspector",
+        {
+          method: "POST",
+          body: formData,
+        },
+        12000
+      );
 
       if (!res.ok) {
         throw new Error(`Upload inspection failed: ${res.statusText}`);
@@ -194,7 +201,7 @@ export function ScreenshotInspector() {
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl]);
+  }, []);
 
   // Analyze screenshot from image URL/link
   const analyzeImageUrl = useCallback(async (url: string, hint: string) => {
@@ -212,10 +219,14 @@ export function ScreenshotInspector() {
         formData.append("text_hint", hint.trim());
       }
 
-      const res = await fetch(`${apiUrl}/api/v1/scans/screenshot-inspector`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await resilientFetch(
+        "/api/v1/scans/screenshot-inspector",
+        {
+          method: "POST",
+          body: formData,
+        },
+        10000
+      );
 
       if (!res.ok) {
         throw new Error(`Link inspection failed: ${res.statusText}`);
@@ -238,7 +249,7 @@ export function ScreenshotInspector() {
     } finally {
       setIsLoading(false);
     }
-  }, [apiUrl]);
+  }, []);
 
   // Initial load
   useEffect(() => {

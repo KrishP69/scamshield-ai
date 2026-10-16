@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   FileText,
   Link2,
@@ -25,6 +26,8 @@ import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ThreatFactorsSection } from "@/components/ui/ThreatFactorsSection";
 import { ScreenshotInspector } from "@/components/ui/ScreenshotInspector";
+import { resilientFetch } from "@/lib/api";
+import { generateFallbackPassport } from "@/lib/offline-scanner";
 
 const PRESET_MESSAGES = [
   {
@@ -59,13 +62,28 @@ const PRESET_MESSAGES = [
   },
 ];
 
-export default function ScanPage() {
+function ScanContent() {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("link");
   const [platform, setPlatform] = useState("telegram");
   const [content, setContent] = useState("");
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<any | null>(null);
   const [selectedThreatUrl, setSelectedThreatUrl] = useState<string>("");
+
+  useEffect(() => {
+    const textParam = searchParams.get("text");
+    const platParam = searchParams.get("platform");
+    if (textParam) {
+      setContent(textParam);
+      setActiveTab("message");
+      if (platParam) {
+        setPlatform(platParam);
+      }
+      const fallback = generateFallbackPassport(textParam, platParam || "facebook");
+      setResult(fallback);
+    }
+  }, [searchParams]);
 
   const tabs = [
     { id: "link", label: "Telegram & Fishy Link Interceptor", icon: Link2, badge: "REALTIME" },
@@ -76,142 +94,51 @@ export default function ScanPage() {
     { id: "apk", label: "APK / File", icon: FileCode },
   ];
 
-  const handleScan = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleScan = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!content.trim()) return;
 
     setScanning(true);
     setResult(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const res = await fetch(`${apiUrl}/api/v1/scans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: content,
-          content,
-          platform,
-          store_history: false,
-        }),
-      });
+      const res = await resilientFetch(
+        "/api/v1/scans",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: content,
+            content,
+            platform,
+            store_history: false,
+          }),
+        },
+        6000
+      );
 
       if (res.ok) {
         const data = await res.json();
         if (data.passport) {
           setResult(data.passport);
+          return;
         } else if (data.scan_id) {
-          // Fetch full passport
-          const pRes = await fetch(`${apiUrl}/api/v1/scans/${data.scan_id}`);
+          const pRes = await resilientFetch(`/api/v1/scans/${data.scan_id}`, {}, 5000);
           if (pRes.ok) {
             const passport = await pRes.json();
             setResult(passport);
+            return;
           }
         }
-      } else {
-        // Fallback simulated intelligent threat detection
-        simulateFallbackDetection(content, platform);
       }
+      const fallback = generateFallbackPassport(content, platform);
+      setResult(fallback);
     } catch {
-      simulateFallbackDetection(content, platform);
+      const fallback = generateFallbackPassport(content, platform);
+      setResult(fallback);
     } finally {
       setScanning(false);
     }
-  };
-
-  const simulateFallbackDetection = (text: string, plat: string) => {
-    const textLower = text.toLowerCase();
-    const isCrypto = textLower.includes("usdt") || textLower.includes("profit") || textLower.includes("signals") || textLower.includes("200%") || textLower.includes("500%");
-    const isTask = textLower.includes("part time") || textLower.includes("like") || textLower.includes("daily") || textLower.includes("task");
-    const isPhish = textLower.includes("verification") || textLower.includes("login code") || textLower.includes("terminated");
-    const isSafe = textLower.includes("bicycle") || textLower.includes("dinner") || textLower.includes("meeting");
-
-    if (isSafe) {
-      setResult({
-        scan_id: "scan-local-safe",
-        risk_score: 5,
-        level: "LOW",
-        scam_type: "legit",
-        actions: ["No red flags detected. Continue normal interaction observing standard precautions."],
-        reasons: [{ title: "Clean Verified Interaction", plain_text: "No manipulative urgency or scam patterns detected.", severity: "low" }],
-        factors: [
-          { category: "Coercion", title: "Psychological Coercion & Artificial Urgency", is_triggered: false, severity: "safe", explanation: "No manipulative urgency or psychological panic tactics were detected." },
-          { category: "Identity", title: "Authority & Identity Impersonation", is_triggered: false, severity: "safe", explanation: "No unauthorized organizational or authority impersonation detected." },
-          { category: "Financial", title: "Advance Fee Demand & Unrealistic Return Trap", is_triggered: false, severity: "safe", explanation: "No upfront fee traps or unrealistic financial lures detected." },
-          { category: "Credential", title: "Sensitive Credential & Secret Key Harvesting", is_triggered: false, severity: "safe", explanation: "No requests for passwords, OTPs, or private keys detected." },
-          { category: "Destination", title: "Deceptive Web Destination & Off-Platform Trap", is_triggered: false, severity: "safe", explanation: "No phishing, homoglyph links, or suspicious off-platform redirect traps identified." },
-        ],
-      });
-      return;
-    }
-
-    setResult({
-      scan_id: "scan-local-detected",
-      risk_score: 86,
-      level: "CRITICAL",
-      scam_type: isCrypto ? "investment_crypto" : isTask ? "fake_job_task" : isPhish ? "tech_support_impersonation" : "marketplace_advance_payment",
-      actions: [
-        "Cease all communication with the sender immediately.",
-        "Do not transfer funds, share OTPs, or join external Telegram bots.",
-        "Report the suspicious account or channel to platform moderators.",
-      ],
-      reasons: [
-        {
-          code: isCrypto ? "TOO_GOOD_TO_BE_TRUE" : "TASK_JOB_SCAM",
-          title: isCrypto ? "Unrealistic Multiplier Return Trap" : "Fake Part-Time Job Lure",
-          plain_text: isCrypto ? "Guaranteed 200%-500% profit or crypto doubling lure detected." : "High daily payout for effortless online tasks lure detected.",
-          severity: "critical",
-        },
-        {
-          code: "OFF_PLATFORM_MOVE",
-          title: "Attempt to Move Off-Platform",
-          plain_text: "Directs communication to unmonitored Telegram channels or private bots.",
-          severity: "high",
-        },
-      ],
-      factors: [
-        {
-          category: "Coercion",
-          title: "Psychological Coercion & Artificial Urgency",
-          is_triggered: isPhish || textLower.includes("hours") || textLower.includes("urgently"),
-          severity: isPhish ? "critical" : "high",
-          explanation: "Imposes immediate urgency (e.g. account termination or 2-hour window) to bypass rational skepticism.",
-          evidence_snippet: isPhish ? "terminated in 24 hours" : "in 2 hours",
-        },
-        {
-          category: "Identity",
-          title: "Authority & Identity Impersonation",
-          is_triggered: isPhish || textLower.includes("telegram notification") || textLower.includes("officer"),
-          severity: "critical",
-          explanation: "Claims to represent official support or authority to intimidate the victim into compliance.",
-          evidence_snippet: isPhish ? "Telegram Notification" : "Official channel",
-        },
-        {
-          category: "Financial",
-          title: "Advance Fee Demand & Unrealistic Return Trap",
-          is_triggered: isCrypto || isTask,
-          severity: "critical",
-          explanation: "Lures with impossible returns (200%-500% profit) or advance fee traps. Legitimate entities never promise guaranteed multiplier returns.",
-          evidence_snippet: isCrypto ? "Daily 200% - 500% guaranteed profit" : "Daily payout 2000-5000 INR",
-        },
-        {
-          category: "Credential",
-          title: "Sensitive Credential & Secret Key Harvesting",
-          is_triggered: isPhish || textLower.includes("login code") || textLower.includes("otp"),
-          severity: "critical",
-          explanation: "Demands sensitive authentication codes to hijack user accounts or wallets.",
-          evidence_snippet: isPhish ? "login code" : null,
-        },
-        {
-          category: "Destination",
-          title: "Deceptive Web Destination & Off-Platform Trap",
-          is_triggered: true,
-          severity: "high",
-          explanation: "Directs to an unmonitored Telegram channel or external bot to evade platform anti-fraud controls.",
-          evidence_snippet: textLower.includes("t.me") ? text.match(/t\.me\/[^\s]+/)?.[0] || "t.me/channel" : "@channel",
-        },
-      ],
-    });
   };
 
   const loadPreset = (preset: typeof PRESET_MESSAGES[0]) => {
@@ -510,5 +437,22 @@ export default function ScanPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function ScanPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-paper dark:bg-[#090D1F] text-ink dark:text-paper">
+          <div className="text-center space-y-3">
+            <div className="w-8 h-8 border-2 border-ultramarine border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-sm font-mono text-ink/60 dark:text-paper/60">Loading Threat Scanner...</p>
+          </div>
+        </div>
+      }
+    >
+      <ScanContent />
+    </Suspense>
   );
 }

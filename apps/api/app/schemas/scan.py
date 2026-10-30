@@ -7,10 +7,10 @@ from app.schemas.passport import TrustPassport
 class ScanCreateRequest(BaseModel):
     text: Optional[str] = Field(None, max_length=10000, description="Raw message text to inspect")
     platform: PlatformType = Field(default=PlatformType.UNKNOWN, description="Source platform (facebook, telegram, etc.)")
-    url: Optional[str] = Field(None, description="Optional link to inspect")
-    phone: Optional[str] = Field(None, description="Optional phone number to check")
-    username: Optional[str] = Field(None, description="Optional profile handle or username")
-    wallet_address: Optional[str] = Field(None, description="Optional crypto wallet address")
+    url: Optional[str] = Field(None, max_length=2048, description="Optional link to inspect")
+    phone: Optional[str] = Field(None, max_length=50, description="Optional phone number to check")
+    username: Optional[str] = Field(None, max_length=100, description="Optional profile handle or username")
+    wallet_address: Optional[str] = Field(None, max_length=128, description="Optional crypto wallet address")
     store_history: bool = Field(default=False, description="Explicit opt-in to store this scan in history")
 
 

@@ -79,6 +79,8 @@ export default function ReportPage() {
   const scanId = (params?.id as string) || "";
 
   const [passport, setPassport] = useState<TrustPassport | null>(null);
+  const passportRef = React.useRef<TrustPassport | null>(null);
+  passportRef.current = passport;
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeReasonIndex, setActiveReasonIndex] = useState<number | null>(0);
@@ -127,7 +129,7 @@ export default function ReportPage() {
           }
         }
       } catch (err: any) {
-        if (isMounted && !passport) {
+        if (isMounted && !passportRef.current) {
           // If scanId is a local ID or fallback ID, generate a fallback
           if (scanId.startsWith("local-") || scanId.startsWith("scenario")) {
             const fallback = generateFallbackPassport(
@@ -284,6 +286,7 @@ export default function ReportPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => window.print()}
+                disabled={!passport}
                 className="gap-1.5 text-xs hidden sm:inline-flex"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -342,11 +345,10 @@ export default function ReportPage() {
                   <RefreshCw className="w-4 h-4" />
                   <span>Start New Threat Scan</span>
                 </Button>
-                <Link
-                  href="/"
-                  className="px-4 py-2 text-xs font-semibold text-ink/75 dark:text-paper/75 hover:text-ink dark:hover:text-paper"
-                >
-                  Return to Home
+                <Link href="/">
+                  <Button variant="outline" className="gap-2">
+                    <span>Return to Home</span>
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -447,33 +449,35 @@ export default function ReportPage() {
               </div>
 
               {/* Action Recommendations & Cyber Helpline */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 rounded-2xl bg-signal/5 dark:bg-signal/10 border border-signal/20 p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <ShieldAlert className="w-5 h-5 text-signal" />
-                    <h2 className="font-display font-bold text-base sm:text-lg text-ink dark:text-paper">
-                      Recommended Defensive Actions
-                    </h2>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                <div className="md:col-span-2 rounded-2xl bg-signal/5 dark:bg-signal/10 border border-signal/20 p-6 flex flex-col justify-between h-full">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <ShieldAlert className="w-5 h-5 text-signal" />
+                      <h2 className="font-display font-bold text-base sm:text-lg text-ink dark:text-paper">
+                        Recommended Defensive Actions
+                      </h2>
+                    </div>
 
-                  <ul className="space-y-2.5">
-                    {passport.actions && passport.actions.length > 0 ? (
-                      passport.actions.map((action, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-ink/85 dark:text-paper/85">
-                          <span className="w-1.5 h-1.5 rounded-full bg-signal mt-1.5 flex-shrink-0" />
-                          <span>{action}</span>
+                    <ul className="space-y-2.5">
+                      {passport.actions && passport.actions.length > 0 ? (
+                        passport.actions.map((action, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-ink/85 dark:text-paper/85">
+                            <span className="w-1.5 h-1.5 rounded-full bg-signal mt-1.5 flex-shrink-0" />
+                            <span>{action}</span>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="text-xs text-ink/70 dark:text-paper/70">
+                          Exercise digital caution. Do not share payment pins or passwords.
                         </li>
-                      ))
-                    ) : (
-                      <li className="text-xs text-ink/70 dark:text-paper/70">
-                        Exercise digital caution. Do not share payment pins or passwords.
-                      </li>
-                    )}
-                  </ul>
+                      )}
+                    </ul>
+                  </div>
                 </div>
 
                 {/* Helpline Directory Card */}
-                <div className="rounded-2xl bg-paper-100 dark:bg-ink-800 border border-ink/10 dark:border-paper/10 p-6 flex flex-col justify-between">
+                <div className="rounded-2xl bg-paper-100 dark:bg-ink-800 border border-ink/10 dark:border-paper/10 p-6 flex flex-col justify-between h-full">
                   <div>
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-ultramarine dark:text-ultramarine-light">
                       Official Assistance
@@ -522,21 +526,38 @@ export default function ReportPage() {
                   <div className="flex items-center justify-between border-b border-ink/10 dark:border-paper/10 pb-4 mb-4">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-ultramarine" />
-                      <span className="font-mono text-xs font-bold text-ink dark:text-paper">
-                        Analyzed Input Text
+                      <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink dark:text-paper">
+                        Intercepted Message Transcript // Verbatim
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-ink/40 dark:text-paper/40">
-                      Tap reasons to inspect
-                    </span>
+                    {passport.submitted_text && (
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(passport.submitted_text!, "raw_text")}
+                        className="inline-flex items-center gap-1.5 text-[11px] font-mono text-ink/60 dark:text-paper/60 hover:text-ultramarine dark:hover:text-ultramarine-light px-2.5 py-1 rounded-md bg-paper-100 dark:bg-ink-700 border border-ink/10 dark:border-paper/10 transition-colors"
+                        title="Copy Raw Intercepted Text"
+                      >
+                        {copiedIndicator === "raw_text" ? (
+                          <>
+                            <Check className="w-3 h-3 text-verify" />
+                            <span className="text-verify font-bold">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            <span>Copy Transcript</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {passport.submitted_text ? (
-                    <div className="p-4 rounded-xl bg-paper-100 dark:bg-ink-950 font-sans text-xs sm:text-sm leading-relaxed text-ink/90 dark:text-paper/90 border border-ink/5 dark:border-paper/5 max-h-[360px] overflow-y-auto">
+                    <div className="p-4 sm:p-5 rounded-xl bg-paper-50 dark:bg-ink-950 font-sans text-xs sm:text-sm leading-relaxed text-ink/90 dark:text-paper/90 border border-ink/10 dark:border-paper/10 border-l-4 border-l-ultramarine max-h-[360px] overflow-y-auto shadow-inner">
                       <p className="whitespace-pre-wrap">{passport.submitted_text}</p>
                     </div>
                   ) : (
-                    <div className="p-6 text-center rounded-xl bg-paper-100 dark:bg-ink-950 text-xs text-ink/50 dark:text-paper/50">
+                    <div className="p-6 text-center rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink/10 dark:border-paper/10 text-xs text-ink/50 dark:text-paper/50">
                       Raw text was processed ephemerally and omitted for zero-knowledge data retention.
                     </div>
                   )}

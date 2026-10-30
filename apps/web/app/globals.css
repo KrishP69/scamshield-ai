@@ -32,13 +32,25 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-bricolage), sans-serif;
+    font-family: var(--font-bricolage), "Noto Sans Devanagari", "Nirmala UI", sans-serif;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
+}
+
+/* Indic scripts (Hindi, Marathi) typographic breathing room & ligature safety */
+:lang(hi), :lang(mr) {
+  letter-spacing: normal;
+}
+
+:lang(hi) h1, :lang(hi) h2, :lang(hi) h3, :lang(hi) h4, :lang(hi) h5, :lang(hi) h6,
+:lang(mr) h1, :lang(mr) h2, :lang(mr) h3, :lang(mr) h4, :lang(mr) h5, :lang(mr) h6 {
+  letter-spacing: 0 !important;
+  line-height: 1.35;
 }
 
 /* Glassmorphism & 3D utility */

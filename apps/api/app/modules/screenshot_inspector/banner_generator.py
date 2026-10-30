@@ -149,7 +149,7 @@ def generate_preset_screenshot(preset: str) -> Dict[str, Any]:
             "impersonated_brand": "Instagram Security Team",
         }
 
-    elif preset == "iphone_lottery_giveaway":
+    elif preset in ("iphone_lottery_giveaway", "absurd_deal", "fake_deal"):
         # Archetype: Absurd iPhone 16 Pro Giveaway Advance Fee
         img = _create_gradient_banner((w, h), (245, 158, 11), (67, 20, 7))
         draw = ImageDraw.Draw(img)

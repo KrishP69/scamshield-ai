@@ -1,8 +1,9 @@
 from typing import List
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
+from app.core.security import require_admin
 from app.schemas.admin import AdminMetrics, LabelQueueItem, ReviewLabelRequest
 
-router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
+router = APIRouter(prefix="/admin", tags=["Admin & Moderation"], dependencies=[Depends(require_admin)])
 
 
 @router.get("/metrics", response_model=AdminMetrics)

@@ -171,18 +171,18 @@ export function ScenarioWalkthrough() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Input payload */}
             <div className="lg:col-span-6 space-y-4">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-ink/50 dark:text-paper/50">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Incoming Test Payload
-              </h4>
+              </p>
               <div className="p-4 rounded-xl bg-paper-100 dark:bg-ink-950 border border-ink/10 dark:border-paper/10 font-mono text-xs text-ink/90 dark:text-paper/90 leading-relaxed">
                 {current.input}
               </div>
 
               <div className="pt-2">
-                <span className="text-xs font-semibold text-ink/70 dark:text-paper/70 block mb-1">
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                   Human Vulnerability (Before Scan):
                 </span>
-                <p className="text-xs sm:text-sm text-ink/60 dark:text-paper/60 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                   {current.before}
                 </p>
               </div>
@@ -190,9 +190,9 @@ export function ScenarioWalkthrough() {
 
             {/* Passport Protection */}
             <div className="lg:col-span-6 space-y-4">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-ink/50 dark:text-paper/50">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 ScamShield Decision & Passport Impact
-              </h4>
+              </p>
               <div
                 className={`p-4 rounded-xl border leading-relaxed text-xs sm:text-sm ${
                   current.isSafe

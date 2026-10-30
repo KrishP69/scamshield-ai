@@ -2,6 +2,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Union
 import hashlib
 import hmac
+import os
+import secrets
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 try:
     import jwt
@@ -22,17 +26,25 @@ try:
         return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
 
 except ImportError:
-    # Safe SHA-256 fallback if bcrypt not installed
+    # Secure PBKDF2-HMAC-SHA256 fallback if bcrypt not installed
     def verify_password(plain_password: str, hashed_password: str) -> bool:
-        salt = "scamshield_salt"
-        expected = hashlib.sha256(f"{salt}:{plain_password}".encode()).hexdigest()
-        return hmac.compare_digest(expected, hashed_password)
+        try:
+            if ":" not in hashed_password:
+                return False
+            salt, stored_hash = hashed_password.split(":", 1)
+            computed = hashlib.pbkdf2_hmac("sha256", plain_password.encode(), bytes.fromhex(salt), 100000).hex()
+            return hmac.compare_digest(stored_hash, computed)
+        except Exception:
+            return False
 
     def get_password_hash(password: str) -> str:
-        salt = "scamshield_salt"
-        return hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
+        salt = secrets.token_bytes(16)
+        key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100000)
+        return f"{salt.hex()}:{key.hex()}"
 
 from app.core.config import settings
+
+bearer_security = HTTPBearer(auto_error=False)
 
 
 def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -65,3 +77,35 @@ def decode_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except Exception:
         return None
+
+
+async def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_security)) -> Optional[Dict[str, Any]]:
+    if not credentials:
+        return None
+    token = credentials.credentials
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
+        return None
+    return payload
+
+
+async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_security)) -> Dict[str, Any]:
+    if not credentials:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("type") != "access":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired access token")
+    return payload
+
+
+async def require_admin(credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_security)) -> Optional[Dict[str, Any]]:
+    if settings.DEBUG and not credentials:
+        return {"sub": "dev_admin", "role": "admin"}
+    if not credentials:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("type") != "access":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired access token")
+    if payload.get("role") != "admin" and not settings.DEBUG:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin permissions required")
+    return payload

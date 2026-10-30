@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-ink/80 dark:text-paper/80 hover:text-ink dark:hover:text-paper hover:bg-paper-200 dark:hover:bg-ink-700 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine"
         aria-expanded={isOpen}
-        aria-label="Select language"
+        aria-label={`Select language (current: ${(locale || "en").toUpperCase()})`}
       >
         <Globe className="w-3.5 h-3.5 text-ultramarine dark:text-cyan-400" />
         <span className="uppercase tracking-wider">{locale || "EN"}</span>

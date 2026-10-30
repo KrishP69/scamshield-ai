@@ -90,7 +90,7 @@ const MODULES_DATA = [
   {
     slug: "voice-verifier",
     name: "AI Voice & Call Verifier",
-    number: "08",
+    number: "07",
     tier: "V1.5 — Prototype",
     icon: Mic,
     endpoint: "POST /api/v1/scans",
@@ -101,7 +101,7 @@ const MODULES_DATA = [
   {
     slug: "background-shield",
     name: "Real-Time Background Shield",
-    number: "09",
+    number: "08",
     tier: "V2 — Stretch",
     icon: Smartphone,
     endpoint: "POST /api/v1/scans/quick",

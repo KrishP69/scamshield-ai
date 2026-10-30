@@ -56,7 +56,20 @@ def analyze_heuristics(url_or_domain: str) -> Dict[str, Any]:
     if not url.startswith(("http://", "https://")):
         url = "http://" + url
 
-    parsed = urlparse(url)
+    try:
+        parsed = urlparse(url)
+    except (ValueError, Exception):
+        return {
+            "is_fishy": True,
+            "score": 0.85,
+            "primary_method": "Malformed URL Syntax & RFC Violation",
+            "matched_keywords": ["malformed_syntax"],
+            "matched_brands": [],
+            "tld": "",
+            "is_high_risk_tld": False,
+            "entropy": 0.0,
+            "is_dga_entropy": False,
+        }
     hostname = parsed.hostname or parsed.netloc or ""
     path = parsed.path or ""
     query = parsed.query or ""

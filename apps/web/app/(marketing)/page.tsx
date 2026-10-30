@@ -48,8 +48,8 @@ export default function HomePage() {
                 <span>{t("hero.badge", "Explainable Threat Defense for Indian Digital Spaces")}</span>
               </div>
 
-              <h1 className="font-display font-extrabold text-3xl sm:text-5xl lg:text-6xl text-ink dark:text-paper tracking-tight leading-[1.1]">
-                {t("hero.headline1", "Know if it's a scam")} <br className="hidden sm:inline" />
+              <h1 className="font-display font-extrabold text-3xl sm:text-5xl lg:text-6xl text-ink dark:text-paper tracking-normal sm:tracking-tight leading-snug sm:leading-[1.2] flex flex-col gap-2 sm:gap-3">
+                <span>{t("hero.headline1", "Know if it's a scam")}</span>
                 <span className="text-ultramarine dark:text-ultramarine-light">
                   {t("hero.headline2", "before you reply.")}
                 </span>

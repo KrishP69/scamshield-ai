@@ -126,11 +126,17 @@ export function ScannerInput() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={4}
+            maxLength={5000}
             placeholder={t("hero.placeholder", "Paste a suspicious Facebook Marketplace message, Telegram link, phone number, or crypto wallet address...")}
-            className="w-full p-3.5 sm:p-4 rounded-xl border border-ink/15 dark:border-paper/15 bg-paper/50 dark:bg-ink-900/50 text-ink dark:text-paper placeholder:text-ink/40 dark:placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-ultramarine text-sm sm:text-base resize-none transition-all"
+            className="w-full p-3.5 sm:p-4 pb-7 rounded-xl border border-ink/15 dark:border-paper/15 bg-paper/50 dark:bg-ink-900/50 text-ink dark:text-paper placeholder:text-ink/40 dark:placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-ultramarine text-sm sm:text-base resize-none transition-all"
             required
             aria-label="Input text message, link, or wallet address to inspect"
           />
+          {text.length > 0 && (
+            <span className="absolute bottom-2 right-3 text-[10px] font-mono text-ink/40 dark:text-paper/40 pointer-events-none">
+              {text.length.toLocaleString()} / 5,000
+            </span>
+          )}
         </div>
 
         {/* Controls row */}

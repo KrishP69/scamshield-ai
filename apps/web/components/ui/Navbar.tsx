@@ -115,7 +115,11 @@ export function Navbar() {
           ))}
           <div className="pt-4 border-t border-ink/10 dark:border-paper/10 flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-ink/60 dark:text-paper/60">Language</span>
+              <span className="text-xs text-ink/75 dark:text-paper/75 font-medium">Sound Effects</span>
+              <AudioToggle compact />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-ink/75 dark:text-paper/75 font-medium">Language</span>
               <LanguageSwitcher />
             </div>
             <Link href="/radar" onClick={() => setMobileMenuOpen(false)}>

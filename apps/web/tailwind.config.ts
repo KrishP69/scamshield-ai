@@ -12,6 +12,7 @@ const config: Config = {
       colors: {
         ink: {
           DEFAULT: "var(--ink)",
+          950: "#050816",
           900: "#080c1d",
           800: "#0F1633",
           700: "#182352",
@@ -19,6 +20,7 @@ const config: Config = {
         },
         paper: {
           DEFAULT: "var(--paper)",
+          50: "#F8FAFC",
           100: "#FFFFFF",
           200: "#F3F5FA",
           300: "#E5E9F2",
@@ -46,10 +48,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-bricolage)", "sans-serif"],
-        sans: ["var(--font-inter)", "sans-serif"],
+        display: ["var(--font-bricolage)", "'Noto Sans Devanagari'", "'Nirmala UI'", "sans-serif"],
+        sans: ["var(--font-inter)", "'Noto Sans Devanagari'", "'Nirmala UI'", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
-        devanagari: ["var(--font-noto-sans-devanagari)", "sans-serif"],
+        devanagari: ["var(--font-noto-sans-devanagari)", "'Noto Sans Devanagari'", "'Nirmala UI'", "sans-serif"],
       },
       animation: {
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",

@@ -332,7 +332,9 @@ def inspect_screenshot_banner(
     return {
         "verdict": verdict,
         "risk_score": risk_score,
+        "is_fishy": risk_score >= 45,
         "threat_category": threat_category,
+        "detected_threat_type": threat_category,
         "threat_title": threat_title,
         "summary": summary,
         "target_platforms": list(set(target_platforms)) or ["Social Media & Gaming"],

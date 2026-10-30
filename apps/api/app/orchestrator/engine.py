@@ -8,6 +8,8 @@ from app.modules.scam_guardian.guardian import scam_guardian
 from app.modules.file_scanner import apk_profiler
 from app.modules.telegram_bot_scanner import telegram_bot_scanner
 from app.modules.voice_verifier import voice_verifier
+from app.modules.crypto_detector import crypto_detector
+from app.modules.reverse_search import reverse_search
 from app.orchestrator.events import event_broadcaster
 from app.preprocess.clean import clean_text
 from app.preprocess.entities import extract_all_entities
@@ -30,6 +32,8 @@ class ScanOrchestrator:
             apk_profiler,
             telegram_bot_scanner,
             voice_verifier,
+            crypto_detector,
+            reverse_search,
         ]
 
     async def execute_scan(

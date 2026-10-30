@@ -99,12 +99,14 @@ class TelegramBotScanner(DetectionModule):
         indicators["flagged_bots"] = [h for h in tg_handles if h.lower().endswith("bot")]
         indicators["telegram_urls"] = list(set(tg_links))
 
+        raw_target = ctx.raw_text or ctx.cleaned_text or ""
         for item in TELEGRAM_SCAM_PATTERNS:
             match = re.search(item["pattern"], text, re.IGNORECASE)
             if match:
                 highest_score = max(highest_score, item["weight"])
                 indicators["identified_tactics"].append(item["code"])
-                span = match.span() if match else None
+                raw_match = re.search(item["pattern"], raw_target, re.IGNORECASE)
+                span = raw_match.span() if raw_match else None
 
                 evidence_list.append(
                     Evidence(

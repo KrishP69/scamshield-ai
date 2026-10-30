@@ -73,6 +73,19 @@ TACTIC_RULES: Dict[str, Dict[str, any]] = {
             r"\b(?:like and earn|youtube subscribe task|daily 5000 income)\b",
         ],
     },
+    "adversarial_prompt_injection": {
+        "title": "Adversarial Prompt Injection & Scanner Evasion Attempt",
+        "severity": SeverityLevel.CRITICAL,
+        "plain_text": "Contains explicit adversarial jailbreak tokens attempting to manipulate the security analyzer or force a safe verdict (MITRE ATLAS AML.T0054 / OWASP LLM01).",
+        "patterns": [
+            r"\b(?:ignore\s+(?:all\s+)?(?:previous\s+)?(?:instructions?|prompts?|rules?))\b",
+            r"\b(?:system\s+(?:override|prompt\s*injection)|disregard\s+(?:all\s+)?(?:guidelines|safety|instructions))\b",
+            r"\b(?:you\s+are\s+now\s+(?:in\s+developer\s+mode|unrestricted|a\s+benign))\b",
+            r"\b(?:output\s+(?:only\s+)?(?:safe|clean|benign|\{\s*\"verdict\"\s*:\s*\"safe\"\s*\}))\b",
+            r"\b(?:mark\s+this\s+(?:message|scan|input)\s+as\s+(?:safe|clean|benign))\b",
+            r"\b(?:jailbreak|dan\s+mode|bypass\s+filters?)\b",
+        ],
+    },
     "secrecy_isolation": {
         "title": "Secrecy & Isolation Tactic",
         "severity": SeverityLevel.HIGH,

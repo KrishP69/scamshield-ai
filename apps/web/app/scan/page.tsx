@@ -86,9 +86,9 @@ function ScanContent() {
   }, [searchParams]);
 
   const tabs = [
-    { id: "link", label: "Telegram & Fishy Link Interceptor", icon: Link2, badge: "REALTIME" },
-    { id: "screenshot", label: "Fishy Screenshot & Absurd Deals", icon: ImageIcon, badge: "VISUAL AI" },
-    { id: "message", label: "Chat & Social Engineering", icon: FileText },
+    { id: "link", label: "Telegram & Links", icon: Link2, badge: "REALTIME" },
+    { id: "screenshot", label: "Screenshots", icon: ImageIcon, badge: "OCR" },
+    { id: "message", label: "Chat & Social", icon: FileText },
     { id: "phone", label: "Phone / Profile", icon: Phone },
     { id: "crypto", label: "Crypto Wallet", icon: Coins },
     { id: "apk", label: "APK / File", icon: FileCode },
@@ -185,7 +185,7 @@ function ScanContent() {
             </div>
 
             {/* Input Tabs with 3D aesthetic */}
-            <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-none border-b border-ink/10 dark:border-paper/10 mb-6">
+            <div className="flex flex-wrap gap-2 pb-3 border-b border-ink/10 dark:border-paper/10 mb-6">
               {tabs.map((t) => {
                 const Icon = t.icon;
                 return (
@@ -248,7 +248,7 @@ function ScanContent() {
                   </div>
                 )}
 
-                <div>
+                <div className="relative">
                   <label htmlFor="scan-input" className="sr-only">
                     Threat Input
                   </label>
@@ -256,6 +256,7 @@ function ScanContent() {
                     id="scan-input"
                     required
                     rows={4}
+                    maxLength={5000}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder={
@@ -265,8 +266,13 @@ function ScanContent() {
                         ? "Paste crypto wallet address (BTC, ETH, TRON, or SOL)"
                         : "Enter details to inspect..."
                     }
-                    className="w-full p-4 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink/15 dark:border-paper/15 text-xs sm:text-sm text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-ultramarine"
+                    className="w-full p-4 pb-7 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink/15 dark:border-paper/15 text-xs sm:text-sm text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-ultramarine"
                   />
+                  {content.length > 0 && (
+                    <span className="absolute bottom-2 right-3 text-[10px] font-mono text-ink/40 dark:text-paper/40 pointer-events-none">
+                      {content.length.toLocaleString()} / 5,000
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between pt-2">

@@ -257,9 +257,9 @@ export function InteractivePassportPreview() {
 
             {/* Extracted IOCs */}
             <div className="mt-6 pt-4 border-t border-ink/10 dark:border-paper/10">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-ink/50 dark:text-paper/50 mb-3">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
                 Extracted Indicators (Defanged for Safety)
-              </h4>
+              </p>
               <div className="space-y-2">
                 {scenario.indicators.map((ioc, idx) => (
                   <div
@@ -325,9 +325,9 @@ export function InteractivePassportPreview() {
 
             {/* Reasons List */}
             <div className="mt-6 space-y-3">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-ink/50 dark:text-paper/50">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Machine-Generated Evidence Reasons
-              </h4>
+              </p>
               {scenario.reasons.map((r) => {
                 const isSelected = r.id === activeReasonId;
                 return (

@@ -12,7 +12,20 @@ from app.schemas.scan import QuickScanRequest, QuickScanResponse, ScanCreateRequ
 
 router = APIRouter(prefix="/scans", tags=["Scans & Detection"])
 
-_scan_store = {}
+import collections
+
+# Bounded in-memory scan store (max 2,000 items) with LRU eviction to prevent memory leaks
+class BoundedDict(collections.OrderedDict):
+    def __init__(self, maxsize=2000, *args, **kwargs):
+        self.maxsize = maxsize
+        super().__init__(*args, **kwargs)
+
+    def __setitem__(self, key, value):
+        super().__setitem__(key, value)
+        if len(self) > self.maxsize:
+            self.popitem(last=False)
+
+_scan_store = BoundedDict(maxsize=2000)
 
 
 @router.post("", response_model=ScanResponse, status_code=status.HTTP_202_ACCEPTED)
@@ -142,6 +155,68 @@ async def quick_scan(payload: QuickScanRequest) -> QuickScanResponse:
     )
 
 
+async def fetch_remote_image_safely(url_str: str, max_bytes: int = 10 * 1024 * 1024) -> Optional[bytes]:
+    """
+    Safely downloads a remote image while strictly defending against SSRF, internal network probes,
+    cloud metadata exfiltration, circular redirects, and OOM denial of service.
+    """
+    from urllib.parse import urlparse
+    import httpx
+    from app.modules.link_scanner.ssrf import detect_ssrf_and_ip_host
+    from app.core.logging import logger
+
+    current_url = url_str.strip()
+    parsed = urlparse(current_url)
+    if parsed.scheme.lower() not in ("http", "https"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid URL scheme. Only HTTP and HTTPS URLs are permitted.",
+        )
+
+    async with httpx.AsyncClient(timeout=6.0, follow_redirects=False) as client:
+        for _ in range(4):
+            parsed_hop = urlparse(current_url)
+            hop_host = parsed_hop.hostname or ""
+            ssrf_check = detect_ssrf_and_ip_host(hop_host)
+            if ssrf_check["is_ssrf_risk"]:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Target URL blocked by SSRF & internal isolation guard: {ssrf_check.get('risk_description')}",
+                )
+
+            try:
+                resp = await client.get(current_url)
+            except httpx.RequestError as e:
+                logger.warning(f"Failed fetching image from {current_url}: {e}")
+                return None
+
+            if resp.status_code in (301, 302, 303, 307, 308):
+                location = resp.headers.get("Location")
+                if not location:
+                    return None
+                from urllib.parse import urljoin
+                location = urljoin(current_url, location)
+                current_url = location
+                continue
+
+            if resp.status_code == 200:
+                content_len = resp.headers.get("Content-Length")
+                if content_len and int(content_len) > max_bytes:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        detail="Remote image exceeds maximum allowed size of 10MB.",
+                    )
+                content = resp.content
+                if len(content) > max_bytes:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        detail="Remote image payload exceeded maximum allowed size of 10MB.",
+                    )
+                return content
+            return None
+    return None
+
+
 @router.post("/screenshot-inspector")
 async def scan_screenshot_banner(
     request: Request,
@@ -157,9 +232,7 @@ async def scan_screenshot_banner(
     """
     await check_rate_limit(request)
     from app.modules.screenshot_inspector import inspect_screenshot_banner
-    from app.core.logging import logger
     import base64
-    import httpx
 
     image_bytes = None
     filename = "uploaded_screenshot.png"
@@ -179,18 +252,18 @@ async def scan_screenshot_banner(
     elif image_url:
         image_url_str = image_url.strip()
         filename = image_url_str.split("/")[-1].split("?")[0] or "link_screenshot.png"
-        try:
-            async with httpx.AsyncClient(timeout=8.0, follow_redirects=True) as client:
-                res = await client.get(image_url_str)
-                if res.status_code == 200 and len(res.content) > 0:
-                    image_bytes = res.content
-        except Exception as e:
-            logger.warning(f"Could not fetch screenshot from image_url {image_url_str}: {e}")
+        image_bytes = await fetch_remote_image_safely(image_url_str)
         
         if not text_hint:
             text_hint = f"Screenshot URL: {image_url_str}"
 
-    if not image_bytes and not preset and not image_url:
+    if image_url and not image_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to retrieve image from the provided URL. Please verify the URL or upload an image directly.",
+        )
+
+    if not image_bytes and not preset:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="No screenshot, URL, or preset provided. Please upload an image, enter a link, or choose a preset.",

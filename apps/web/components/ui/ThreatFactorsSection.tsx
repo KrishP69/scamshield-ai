@@ -219,11 +219,11 @@ export function ThreatFactorsSection({
 
                   {/* Highlighted Evidence Snippet if triggered */}
                   {isTriggered && factor.evidence_snippet && (
-                    <div className="p-2.5 rounded-lg bg-paper-100 dark:bg-ink-950 border border-ink/10 dark:border-paper/10 text-xs flex items-center gap-2">
-                      <span className="font-mono text-[10px] uppercase font-bold text-signal px-1.5 py-0.5 rounded bg-signal/10 flex-shrink-0">
+                    <div className="p-2.5 rounded-lg bg-paper-50 dark:bg-ink-950 border border-signal/20 dark:border-signal/30 text-xs flex items-center gap-2 shadow-sm">
+                      <span className="font-mono text-[10px] uppercase font-bold text-signal px-2 py-0.5 rounded-md bg-signal/15 dark:bg-signal/20 border border-signal/30 flex-shrink-0">
                         Triggered by Text
                       </span>
-                      <span className="font-mono text-ink/90 dark:text-paper/90 truncate">
+                      <span className="font-mono text-ink/90 dark:text-paper/90 truncate font-semibold">
                         &ldquo;{factor.evidence_snippet}&rdquo;
                       </span>
                     </div>

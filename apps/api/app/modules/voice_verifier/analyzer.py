@@ -78,12 +78,14 @@ class VoiceVerifier(DetectionModule):
         indicators["audio_file_detected"] = file_name.endswith((".mp3", ".wav", ".m4a", ".ogg", ".aac"))
         highest_score = 0.0
 
+        raw_target = ctx.raw_text or ctx.cleaned_text or ""
         for item in VOICE_EXTORTION_PATTERNS:
             match = re.search(item["pattern"], text, re.IGNORECASE)
             if match:
                 highest_score = max(highest_score, item["weight"])
                 indicators["extortion_tactics"].append(item["code"])
-                span = match.span() if match else None
+                raw_match = re.search(item["pattern"], raw_target, re.IGNORECASE)
+                span = raw_match.span() if raw_match else None
 
                 evidence_list.append(
                     Evidence(

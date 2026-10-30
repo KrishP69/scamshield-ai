@@ -77,7 +77,25 @@ class APKProfiler(DetectionModule):
         manifest_text = ctx.raw_text or ctx.cleaned_text or ""
         file_name = (ctx.file_name or "").lower()
 
-        is_apk = file_name.endswith(".apk") or "manifest" in manifest_text.lower() or "android.permission" in manifest_text
+        # If binary APK bytes uploaded, extract AndroidManifest.xml from zip archive
+        if ctx.file_bytes:
+            try:
+                import io
+                import zipfile
+                with zipfile.ZipFile(io.BytesIO(ctx.file_bytes), "r") as zf:
+                    for name in zf.namelist():
+                        if name.lower().endswith("androidmanifest.xml"):
+                            extracted_manifest = zf.read(name).decode("utf-8", errors="ignore")
+                            manifest_text = f"{manifest_text} {extracted_manifest}"
+            except Exception:
+                pass
+
+        is_apk = (
+            file_name.endswith(".apk")
+            or "manifest" in manifest_text.lower()
+            or "android.permission" in manifest_text
+            or ctx.file_mime == "application/vnd.android.package-archive"
+        )
 
         if not is_apk and ctx.file_mime != "application/vnd.android.package-archive":
             # If not an APK context, return benign low score

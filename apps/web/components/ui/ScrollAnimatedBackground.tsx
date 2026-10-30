@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { ShieldAlert, ShieldCheck, Eye, Lock, Activity, ChevronUp } from "lucide-react";
 import { playPhaseWhoosh, playRadarPing, playCyberHover, playCyberClick } from "@/lib/audio";
 import { AudioToggle } from "./AudioToggle";
@@ -65,6 +66,7 @@ export const PHASES: PhaseConfig[] = [
 ];
 
 export function ScrollAnimatedBackground() {
+  const pathname = usePathname();
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState<number>(0);
   const [scrollY, setScrollY] = useState<number>(0);
@@ -74,6 +76,7 @@ export function ScrollAnimatedBackground() {
 
   useEffect(() => {
     setIsClient(true);
+    if (pathname !== "/") return;
 
     const handleScroll = () => {
       const y = window.scrollY;
@@ -107,7 +110,7 @@ export function ScrollAnimatedBackground() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
   const activePhase = PHASES[currentPhaseIndex];
   const Icon = activePhase.icon;
@@ -123,7 +126,7 @@ export function ScrollAnimatedBackground() {
     });
   };
 
-  if (!isClient) return null;
+  if (!isClient || pathname !== "/") return null;
 
   return (
     <>

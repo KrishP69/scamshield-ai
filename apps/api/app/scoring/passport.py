@@ -136,6 +136,7 @@ def build_trust_passport(
         "crypto_detector",
         "file_scanner",
         "voice_verifier",
+        "telegram_bot_scanner",
     ]
     findings_map = {f.module: f for f in findings}
     module_summaries: List[ModuleSummary] = []

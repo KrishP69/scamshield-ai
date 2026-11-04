@@ -310,36 +310,36 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
       "Report the malicious channel or bot to Telegram moderators.",
     ];
   } else if (isViralSocialProof) {
-    scamType = "viral_social_proof_phish";
+    scamType = "viral_cash_reward_scam";
     score = 94;
     reasons = [
       {
         code: "FABRICATED_SOCIAL_PROOF",
         severity: "critical",
-        title: "Fabricated Social Proof ('I thought it was fake, but I got ₹2,000')",
-        plain_text: "Uses false testimonial claims ('pan kharach ₹2,000 milale, tumhi pan try kara') to disarm victim suspicion and encourage viral forwarding.",
+        title: "Fabricated Social Proof ('₹2,000 milale, tumhi pan try kara')",
+        plain_text: "Uses fake peer testimonial claims in Marathi ('Mala vatla fake ahe... pan kharach ₹2,000 milale') to disarm skepticism and lure victims into believing free cash was received.",
         source: "scam_guardian",
       },
       {
         code: "HIGH_RISK_DISPOSABLE_DOMAIN",
         severity: "critical",
-        title: "Disposable High-Risk Phishing Domain (.buzz)",
-        plain_text: "Contains a link hosted on a disposable high-risk domain commonly utilized by automated credential-harvesting and lottery scam syndicates.",
+        title: "Disposable High-Risk Scam Domain (.buzz)",
+        plain_text: "Contains a link hosted on a disposable .buzz domain commonly utilized for fake lottery wheels, reward traps, and adware redirects.",
         source: "link_scanner",
       },
       {
         code: "VIRAL_FORWARDING_TRACKER",
         severity: "high",
-        title: "WhatsApp Viral Referral Tracker (s=wa)",
-        plain_text: "The URL embeds WhatsApp referral parameters designed to track mass propagation across chat groups and personal contacts.",
+        title: "WhatsApp Viral Referral Loop (s=wa)",
+        plain_text: "The URL embeds WhatsApp referral parameters (?s=wa) engineered to force victims to mass-forward the link across chat groups to 'claim' rewards.",
         source: "heuristics",
       },
     ];
     actions = [
-      "DO NOT click on this link or submit your phone number or banking details.",
+      "DO NOT click this link or enter your phone number or UPI ID.",
       "DO NOT forward this message to WhatsApp groups, family, or friends.",
-      "Warn the sender that their WhatsApp or device may be forwarding automated scam links.",
-      "Delete the message and block the sender.",
+      "No legitimate platform or company gives away free cash through disposable .buzz links.",
+      "Warn the sender that their message is a known viral forwarding trap.",
     ];
   } else if (isTelegramTrap) {
     scamType = "telegram_impersonation_bot";
@@ -404,21 +404,29 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
         category: "Identity",
         title: "Authority & Identity Impersonation",
         is_triggered: isMarketplace || isPhishing || isDigitalArrest,
-        severity: "critical",
+        severity: isMarketplace || isPhishing || isDigitalArrest ? "critical" : "safe",
         explanation: isMarketplace
           ? "Impersonates Indian Army personnel stationed at Pune Cantonment to establish false authority."
-          : "Impersonates banking authorities (SBI) or government officials.",
-        evidence_snippet: isMarketplace ? "Indian Army at Pune Cantonment" : "Authority claim",
+          : isPhishing
+          ? "Impersonates banking authorities (SBI) or government officials."
+          : "No institutional authority claim — exploits peer social proof and viral forwarding instead.",
+        evidence_snippet: isMarketplace ? "Indian Army at Pune Cantonment" : isPhishing ? "Banking KYC" : null,
       },
       {
         category: "Financial",
         title: "Advance Fee Demand & Unrealistic Return Trap",
-        is_triggered: isMarketplace || isCrypto || isJobTask,
+        is_triggered: isMarketplace || isCrypto || isJobTask || isViralSocialProof,
         severity: "critical",
         explanation: isMarketplace
           ? "Demands Rs. 2,000 advance fee under the guise of gate pass verification before paying full amount."
+          : isViralSocialProof
+          ? "Lures victims with fabricated ₹2,000 free cash reward claims to induce clicks and mass sharing."
           : "Lures with instant multiplier returns or fee traps.",
-        evidence_snippet: isMarketplace ? "transfer Rs. 2,000 as refundable gate pass security deposit" : null,
+        evidence_snippet: isMarketplace
+          ? "transfer Rs. 2,000 as refundable gate pass security deposit"
+          : isViralSocialProof
+          ? "₹2,000 milale, tumhi pan try kara"
+          : null,
       },
       {
         category: "Credential",
@@ -429,7 +437,7 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
           ? "Phishing link designed to capture net banking credentials and OTPs."
           : isCrypto
           ? "Harvests 12-word wallet seed phrase."
-          : "No credential harvesting detected in this snippet.",
+          : "No direct credential harvesting requested in the message text.",
         evidence_snippet: isPhishing ? "KYC details to restore transactions" : null,
       },
       {

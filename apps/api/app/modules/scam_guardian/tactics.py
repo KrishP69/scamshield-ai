@@ -195,6 +195,16 @@ TACTIC_RULES: Dict[str, Dict[str, any]] = {
             r"\b(?:kbc\s*head\s*office)\b",
         ],
     },
+    "viral_cash_reward_scam": {
+        "title": "Fabricated Social Proof & Viral Cash Reward Scam",
+        "severity": SeverityLevel.CRITICAL,
+        "plain_text": "Employs fake peer testimonials ('Mala vatla fake ahe pan kharach ₹2,000 milale') to disarm skepticism and trick victims into viral sharing on WhatsApp.",
+        "patterns": [
+            r"(?:mala vatla fake|pan kharach|tumhi pan try|sach me paise|mujhe laga fake)",
+            r"(?:₹\s*[\d,]+.*(?:milale|mile|free|win))",
+            r"(?:\.buzz|\.top|\.cfd|\.icu|\.sbs|\.lat).*[?&]s=wa",
+        ],
+    },
     "loan_app_extortion": {
         "title": "Predatory Loan App & Blackmail Extortion",
         "severity": SeverityLevel.CRITICAL,

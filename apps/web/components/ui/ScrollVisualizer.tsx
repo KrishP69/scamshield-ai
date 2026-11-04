@@ -378,13 +378,7 @@ export function ScrollVisualizer() {
             <span>Launch Live Threat Scanner</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
-          <Link
-            href="/screenshot-inspector"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-ink-800 border border-ink/15 dark:border-paper/15 text-xs font-semibold text-ink dark:text-paper hover:border-ultramarine shadow-sm transition-all"
-          >
-            <Eye className="w-4 h-4 text-rose-500" />
-            <span>Open Screenshot & Deal Inspector</span>
-          </Link>
+
           <Link
             href="/radar"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-paper-100 dark:bg-ink-900 border border-ink/10 dark:border-paper/10 text-xs font-semibold text-ink dark:text-paper hover:bg-paper-200 transition-all"

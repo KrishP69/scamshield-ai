@@ -25,7 +25,6 @@ import { Button } from "@/components/ui/Button";
 import { RealtimeLinkScanner } from "@/components/ui/RealtimeLinkScanner";
 import { LiveThreatStream } from "@/components/ui/LiveThreatStream";
 import { ThreatFactorsSection } from "@/components/ui/ThreatFactorsSection";
-import { ScreenshotInspector } from "@/components/ui/ScreenshotInspector";
 import { resilientFetch } from "@/lib/api";
 import { generateFallbackPassport } from "@/lib/offline-scanner";
 
@@ -87,7 +86,6 @@ function ScanContent() {
 
   const tabs = [
     { id: "link", label: "Telegram & Links", icon: Link2, badge: "REALTIME" },
-    { id: "screenshot", label: "Screenshots", icon: ImageIcon, badge: "OCR" },
     { id: "message", label: "Chat & Social", icon: FileText },
     { id: "phone", label: "Phone / Profile", icon: Phone },
     { id: "crypto", label: "Crypto Wallet", icon: Coins },
@@ -222,8 +220,7 @@ function ScanContent() {
                 key={selectedThreatUrl || "realtime-link-scanner"}
                 initialUrl={selectedThreatUrl}
               />
-            ) : activeTab === "screenshot" ? (
-              <ScreenshotInspector />
+
             ) : (
               /* Message & Other Tab Form */
               <form onSubmit={handleScan} className="space-y-4">
@@ -297,7 +294,7 @@ function ScanContent() {
             )}
 
             {/* Scan Result for Message Form */}
-            {activeTab !== "link" && activeTab !== "screenshot" && result && (
+            {activeTab !== "link" && result && (
               <div className="mt-8 pt-8 border-t border-ink/10 dark:border-paper/10 space-y-6">
                 {/* Result Header */}
                 <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-paper-50 dark:bg-ink-950 border border-ink/10 dark:border-paper/10">

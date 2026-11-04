@@ -15,7 +15,6 @@ export function Navbar() {
 
   const navLinks = [
     { label: t("nav.radar", "24x7 Radar"), href: "/radar", badge: "LIVE" },
-    { label: t("nav.screenshotInspector", "Screenshot Inspector"), href: "/screenshot-inspector", badge: "NEW" },
     { label: t("nav.modules", "Modules"), href: "/modules" },
     { label: t("nav.howItWorks", "How It Works"), href: "/how-it-works" },
     { label: t("nav.docs", "Docs"), href: "/docs" },

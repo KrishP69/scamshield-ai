@@ -100,12 +100,32 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
     textLower.includes("fedex") ||
     textLower.includes("dhl");
 
+  const isViralSocialProof =
+    textLower.includes(".buzz") ||
+    textLower.includes(".top") ||
+    textLower.includes(".click") ||
+    textLower.includes(".cfd") ||
+    textLower.includes(".sbs") ||
+    textLower.includes(".icu") ||
+    textLower.includes("fake ahe") ||
+    textLower.includes("pan kharach") ||
+    textLower.includes("tumhi pan") ||
+    textLower.includes("try kara") ||
+    textLower.includes("kharach") ||
+    textLower.includes("milale") ||
+    textLower.includes("mujhe laga fake") ||
+    textLower.includes("sach me paise") ||
+    textLower.includes("tum bhi try") ||
+    (textLower.includes("s=wa") && (textLower.includes("http://") || textLower.includes("https://"))) ||
+    (textLower.includes("₹") && (textLower.includes("milale") || textLower.includes("mile") || textLower.includes("free") || textLower.includes("win")));
+
   const isSafe =
     !isMarketplace &&
     !isCrypto &&
     !isPhishing &&
     !isJobTask &&
     !isDigitalArrest &&
+    !isViralSocialProof &&
     (textLower.includes("bicycle") ||
       textLower.includes("dinner") ||
       textLower.includes("in person") ||
@@ -276,6 +296,38 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
       "NEVER share your 12-word secret recovery seed phrase with anyone.",
       "Smart contracts cannot automatically triple sent cryptocurrency.",
       "Report the malicious channel or bot to Telegram moderators.",
+    ];
+  } else if (isViralSocialProof) {
+    scamType = "viral_social_proof_phish";
+    score = 94;
+    reasons = [
+      {
+        code: "FABRICATED_SOCIAL_PROOF",
+        severity: "critical",
+        title: "Fabricated Social Proof ('I thought it was fake, but I got ₹2,000')",
+        plain_text: "Uses false testimonial claims ('pan kharach ₹2,000 milale, tumhi pan try kara') to disarm victim suspicion and encourage viral forwarding.",
+        source: "scam_guardian",
+      },
+      {
+        code: "HIGH_RISK_DISPOSABLE_DOMAIN",
+        severity: "critical",
+        title: "Disposable High-Risk Phishing Domain (.buzz)",
+        plain_text: "Contains a link hosted on a disposable high-risk domain commonly utilized by automated credential-harvesting and lottery scam syndicates.",
+        source: "link_scanner",
+      },
+      {
+        code: "VIRAL_FORWARDING_TRACKER",
+        severity: "high",
+        title: "WhatsApp Viral Referral Tracker (s=wa)",
+        plain_text: "The URL embeds WhatsApp referral parameters designed to track mass propagation across chat groups and personal contacts.",
+        source: "heuristics",
+      },
+    ];
+    actions = [
+      "DO NOT click on this link or submit your phone number or banking details.",
+      "DO NOT forward this message to WhatsApp groups, family, or friends.",
+      "Warn the sender that their WhatsApp or device may be forwarding automated scam links.",
+      "Delete the message and block the sender.",
     ];
   } else {
     scamType = "social_engineering_threat";

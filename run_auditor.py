@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 import io
 import zipfile
@@ -16,8 +17,14 @@ def run_tests():
         client = httpx.Client(base_url=BASE_URL, timeout=15.0)
         print(f"[*] Testing against live server at {BASE_URL}")
     except Exception:
-        sys.path.insert(0, "apps/api")
-        from app.main import app
+        api_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "apps", "api"))
+        if api_dir not in sys.path:
+            sys.path.insert(0, api_dir)
+        try:
+            from app.main import app  # type: ignore[import-not-found]
+        except ModuleNotFoundError:
+            import importlib
+            app = getattr(importlib.import_module("app.main"), "app")
         from starlette.testclient import TestClient
         client = TestClient(app)
         print("[*] Testing in-process via FastAPI TestClient(app)")

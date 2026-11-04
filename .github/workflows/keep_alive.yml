@@ -2,8 +2,8 @@ name: Keep Render Alive (Ping Bot)
 
 on:
   schedule:
-    # Runs every 14 minutes (Render sleeps after 15 minutes of inactivity)
-    - cron: '*/14 * * * *'
+    # Runs every 8 minutes to prevent Render free instance from sleeping (Render sleeps after 15m)
+    - cron: '*/8 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions UI
 
 jobs:
@@ -13,10 +13,11 @@ jobs:
       - name: Ping Backend Health Endpoint
         run: |
           echo "Pinging ScamShield API..."
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://scamshield-u6c4.onrender.com/api/v1/health")
+          STATUS=$(curl -s -m 45 -o /dev/null -w "%{http_code}" "https://scamshield-u6c4.onrender.com/api/v1/health" || echo "000")
           echo "Response Status: $STATUS"
           if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 301 ] || [ "$STATUS" -eq 302 ]; then
             echo "API is awake and healthy!"
           else
-            echo "API responded with status $STATUS"
+            echo "Initial ping returned $STATUS. Sending secondary wakeup ping..."
+            curl -s -m 60 "https://scamshield-u6c4.onrender.com/api/v1/ready" || true
           fi

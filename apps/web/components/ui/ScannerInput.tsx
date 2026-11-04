@@ -2,11 +2,26 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Sparkles, AlertCircle, CheckCircle2, ShieldCheck, CornerDownLeft } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  ShieldCheck,
+  ShieldAlert,
+  CornerDownLeft,
+  RotateCcw,
+  ExternalLink,
+  Lock,
+  Layers,
+  AlertTriangle,
+  ChevronRight,
+  Shield,
+} from "lucide-react";
 import { Button } from "./Button";
 
 import { resilientFetch } from "@/lib/api";
-import { generateFallbackPassport } from "@/lib/offline-scanner";
+import { generateFallbackPassport, TrustPassportData } from "@/lib/offline-scanner";
 import { useI18n } from "@/lib/i18n";
 
 const PRESET_SCENARIOS = [
@@ -43,6 +58,7 @@ export function ScannerInput() {
   const [platform, setPlatform] = useState("facebook");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [scanResult, setScanResult] = useState<TrustPassportData | null>(null);
 
   const handleScan = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -69,14 +85,15 @@ export function ScannerInput() {
 
       if (res.ok) {
         const data = await res.json();
-        if (typeof window !== "undefined" && data.passport) {
+        const passport = data.passport || generateFallbackPassport(text, platform);
+        if (typeof window !== "undefined") {
           try {
-            sessionStorage.setItem(`scan_${data.scan_id}`, JSON.stringify(data.passport));
+            sessionStorage.setItem(`scan_${data.scan_id || passport.scan_id}`, JSON.stringify(passport));
           } catch {
             // Ignore quota errors
           }
         }
-        router.push(`/report/${data.scan_id}`);
+        setScanResult(passport);
         return;
       }
       throw new Error(`API returned HTTP ${res.status}`);
@@ -90,7 +107,7 @@ export function ScannerInput() {
           // Ignore quota errors
         }
       }
-      router.push(`/report/${fallbackPassport.scan_id}`);
+      setScanResult(fallbackPassport);
     } finally {
       setLoading(false);
     }
@@ -99,6 +116,13 @@ export function ScannerInput() {
   const loadPreset = (preset: typeof PRESET_SCENARIOS[0]) => {
     setText(preset.text);
     setPlatform(preset.platform);
+    setScanResult(null);
+  };
+
+  const handleReset = () => {
+    setScanResult(null);
+    setText("");
+    setError(null);
   };
 
   return (
@@ -124,8 +148,11 @@ export function ScannerInput() {
         <div className="relative">
           <textarea
             value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={4}
+            onChange={(e) => {
+              setText(e.target.value);
+              if (scanResult) setScanResult(null);
+            }}
+            rows={scanResult ? 3 : 4}
             maxLength={5000}
             placeholder={t("hero.placeholder", "Paste a suspicious Facebook Marketplace message, Telegram link, phone number, or crypto wallet address...")}
             className="w-full p-3.5 sm:p-4 pb-7 rounded-xl border border-ink/15 dark:border-paper/15 bg-paper/50 dark:bg-ink-900/50 text-ink dark:text-paper placeholder:text-ink/40 dark:placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-ultramarine text-sm sm:text-base resize-none transition-all"
@@ -162,22 +189,185 @@ export function ScannerInput() {
             ))}
           </div>
 
-          <Button
-            type="submit"
-            disabled={loading || !text.trim()}
-            className="gap-2 px-5 py-2.5 ml-auto text-sm font-semibold"
-          >
-            {loading ? (
-              <span>{t("hero.analyzing", "Analyzing...")}</span>
-            ) : (
-              <>
-                <span>{t("hero.checkMessage", "Check Message")}</span>
-                <CornerDownLeft className="w-4 h-4 hidden sm:inline opacity-70" />
-              </>
+          <div className="flex items-center gap-2 ml-auto">
+            {scanResult && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-ink/70 dark:text-paper/70 hover:bg-paper-200 dark:hover:bg-ink-700 border border-ink/15 dark:border-paper/15 transition-all"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Clear</span>
+              </button>
             )}
-          </Button>
+
+            <Button
+              type="submit"
+              disabled={loading || !text.trim()}
+              className="gap-2 px-5 py-2.5 text-sm font-semibold"
+            >
+              {loading ? (
+                <span>{t("hero.analyzing", "Analyzing...")}</span>
+              ) : (
+                <>
+                  <span>{scanResult ? "Re-Analyze" : t("hero.checkMessage", "Check Message")}</span>
+                  <CornerDownLeft className="w-4 h-4 hidden sm:inline opacity-70" />
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </form>
+
+      {/* INLINE THREAT ANALYSIS PASSPORT CARD (NO REDIRECT!) */}
+      {scanResult && (
+        <div className="mt-5 pt-5 border-t border-ink/10 dark:border-paper/10 animate-in fade-in slide-in-from-top-3 duration-300 space-y-4">
+          {/* Header Banner */}
+          <div
+            className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+              scanResult.risk_score >= 70
+                ? "bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300"
+                : scanResult.risk_score >= 40
+                ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300"
+                : "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${
+                  scanResult.risk_score >= 70
+                    ? "bg-rose-600 text-white"
+                    : scanResult.risk_score >= 40
+                    ? "bg-amber-600 text-white"
+                    : "bg-emerald-600 text-white"
+                }`}
+              >
+                {scanResult.risk_score >= 70 ? (
+                  <ShieldAlert className="w-5 h-5" />
+                ) : scanResult.risk_score >= 40 ? (
+                  <AlertTriangle className="w-5 h-5" />
+                ) : (
+                  <ShieldCheck className="w-5 h-5" />
+                )}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display font-extrabold text-sm sm:text-base uppercase tracking-wide">
+                    {scanResult.level === "CRITICAL"
+                      ? "Critical Threat Detected"
+                      : scanResult.level === "HIGH"
+                      ? "High Threat Suspected"
+                      : scanResult.level === "CAUTION"
+                      ? "Suspicious Interaction"
+                      : "Verified Safe Interaction"}
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold bg-white/40 dark:bg-black/30 border border-current">
+                    {Math.round(scanResult.confidence * 100)}% Confidence
+                  </span>
+                </div>
+                <p className="text-xs opacity-90 mt-0.5 font-medium">
+                  Typology: <span className="font-mono uppercase">{scanResult.scam_type.replace(/_/g, " ")}</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Score pill */}
+            <div className="flex items-center gap-2 sm:text-right shrink-0">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider block opacity-75">
+                  Threat Score
+                </span>
+                <span className="font-mono font-black text-2xl leading-none">
+                  {scanResult.risk_score}
+                  <span className="text-xs font-normal opacity-70"> / 100</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="w-full bg-paper-200 dark:bg-ink-900 h-2 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-700 ease-out rounded-full ${
+                scanResult.risk_score >= 70
+                  ? "bg-rose-500"
+                  : scanResult.risk_score >= 40
+                  ? "bg-amber-500"
+                  : "bg-emerald-500"
+              }`}
+              style={{ width: `${Math.min(100, Math.max(5, scanResult.risk_score))}%` }}
+            />
+          </div>
+
+          {/* Forensic Reasons */}
+          {scanResult.reasons && scanResult.reasons.length > 0 && (
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-ink/60 dark:text-paper/60">
+                Key Threat Indicators:
+              </span>
+              <div className="space-y-1.5">
+                {scanResult.reasons.map((r, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2.5 rounded-lg bg-paper-100/80 dark:bg-ink-900/80 border border-ink/10 dark:border-paper/10 text-xs flex items-start gap-2"
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                        r.severity === "critical"
+                          ? "bg-rose-500"
+                          : r.severity === "high"
+                          ? "bg-amber-500"
+                          : "bg-emerald-500"
+                      }`}
+                    />
+                    <div>
+                      <span className="font-bold text-ink dark:text-paper mr-1.5">
+                        {r.title}:
+                      </span>
+                      <span className="text-ink/80 dark:text-paper/80 leading-relaxed">
+                        {r.plain_text}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Immediate Defense Checklist */}
+          {scanResult.actions && scanResult.actions.length > 0 && (
+            <div className="p-3.5 rounded-xl bg-ink-900 text-paper dark:bg-ink-950 border border-ink/20 dark:border-paper/10 text-xs space-y-2">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5" />
+                Immediate Defense Checklist:
+              </span>
+              <ul className="space-y-1">
+                {scanResult.actions.slice(0, 3).map((act, i) => (
+                  <li key={i} className="flex items-start gap-2 text-paper/90">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                    <span>{act}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Footer Action to View Dedicated Full Report */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <span className="text-[11px] font-mono text-ink/50 dark:text-paper/50">
+              ID: {scanResult.scan_id}
+            </span>
+            <button
+              type="button"
+              onClick={() => router.push(`/report/${scanResult.scan_id}`)}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ultramarine dark:text-ultramarine-light hover:underline"
+            >
+              <span>View Full Detailed Forensic Report</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -35,29 +35,41 @@ export function getApiUrl(): string {
 }
 
 /**
- * Robust fetch wrapper with timeout and AbortController to prevent indefinite UI hangs.
+ * Bulletproof fetch wrapper with hard Promise.race timeout to prevent indefinite browser socket hangs.
  */
 export async function resilientFetch(
   endpointOrUrl: string,
   options: RequestInit = {},
-  timeoutMs: number = 7000
+  timeoutMs: number = 2500
 ): Promise<Response> {
   const url = endpointOrUrl.startsWith("http")
     ? endpointOrUrl
     : `${getApiUrl()}${endpointOrUrl.startsWith("/") ? "" : "/"}${endpointOrUrl}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    controller.abort(new Error(`Request to ${url} timed out after ${timeoutMs}ms`));
-  }, timeoutMs);
+  let timerId: NodeJS.Timeout | undefined;
 
-  try {
-    const response = await fetch(url, {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timerId = setTimeout(() => {
+      try {
+        controller.abort();
+      } catch {
+        // Ignore abort errors
+      }
+      reject(new Error(`Network request timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  const fetchPromise = (async () => {
+    return await fetch(url, {
       ...options,
       signal: controller.signal,
     });
-    return response;
+  })();
+
+  try {
+    return await Promise.race([fetchPromise, timeoutPromise]);
   } finally {
-    clearTimeout(timeoutId);
+    if (timerId) clearTimeout(timerId);
   }
 }

@@ -108,7 +108,7 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: target }),
         },
-        5000
+        2000
       );
 
       if (res.ok) {

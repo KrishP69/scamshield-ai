@@ -67,8 +67,14 @@ export function ScannerInput() {
     setLoading(true);
     setError(null);
 
+    // Hard safety timer: absolutely guarantees loading ceases after 2.5s maximum
+    let safetyTimeout: NodeJS.Timeout | undefined = setTimeout(() => {
+      setLoading(false);
+      setScanResult((prev) => prev || generateFallbackPassport(text, platform));
+    }, 2500);
+
     try {
-      // 1. Attempt scan via resilient client (5s timeout to prevent hanging UI)
+      // 1. Attempt scan via resilient client (2.5s timeout with Promise.race)
       const res = await resilientFetch(
         "/api/v1/scans",
         {
@@ -80,8 +86,10 @@ export function ScannerInput() {
             store_history: false,
           }),
         },
-        5000
+        2000
       );
+
+      if (safetyTimeout) clearTimeout(safetyTimeout);
 
       if (res.ok) {
         const data = await res.json();
@@ -98,7 +106,7 @@ export function ScannerInput() {
       }
       throw new Error(`API returned HTTP ${res.status}`);
     } catch {
-      // 2. Resilient instant fallback: generate rich local TrustPassport
+      if (safetyTimeout) clearTimeout(safetyTimeout);
       const fallbackPassport = generateFallbackPassport(text, platform);
       if (typeof window !== "undefined") {
         try {
@@ -109,6 +117,7 @@ export function ScannerInput() {
       }
       setScanResult(fallbackPassport);
     } finally {
+      if (safetyTimeout) clearTimeout(safetyTimeout);
       setLoading(false);
     }
   };

@@ -114,7 +114,7 @@ function ScanContent() {
             store_history: false,
           }),
         },
-        6000
+        2000
       );
 
       if (res.ok) {

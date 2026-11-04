@@ -75,15 +75,14 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
     textLower.includes("wallet");
 
   const isPhishing =
-    textLower.includes("kyc") ||
-    textLower.includes("sbi") ||
-    textLower.includes("yono") ||
-    textLower.includes("pan") ||
-    textLower.includes("deactivated") ||
-    textLower.includes("verify") ||
-    textLower.includes("seized") ||
-    textLower.includes(".xyz") ||
-    textLower.includes("http://");
+    (textLower.includes("kyc") ||
+      textLower.includes("sbi") ||
+      textLower.includes("yono") ||
+      /\bpan\s*(?:card|kyc|number|update|link|details)\b/i.test(text) ||
+      (textLower.includes("deactivated") && (textLower.includes("account") || textLower.includes("banking"))) ||
+      (textLower.includes("seized") && textLower.includes("account")) ||
+      textLower.includes(".xyz")) &&
+    (textLower.includes("http://") || textLower.includes("https://") || textLower.includes("login") || textLower.includes("sbi") || textLower.includes("kyc"));
 
   const isJobTask =
     textLower.includes("part time") ||
@@ -261,54 +260,6 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
       "Legitimate buyers NEVER ask the seller to pay an advance or gate pass fee.",
       "If you already sent money, call cyber helpline 1930 immediately to freeze the UPI transaction.",
     ];
-  } else if (isPhishing) {
-    scamType = "credential_phishing";
-    score = 98;
-    reasons = [
-      {
-        code: "PHISHING_URL",
-        severity: "critical",
-        title: "Deceptive Fake Banking Domain (.xyz)",
-        plain_text: "Directs to an unverified domain mimicking SBI Yono NetBanking to harvest PAN and banking credentials.",
-        source: "link_scanner",
-      },
-      {
-        code: "PAN_KYC_PANIC",
-        severity: "critical",
-        title: "Account Deactivation & Seizure Coercion",
-        plain_text: "Threatens immediate account closure and seizure of funds to compel victim to click the phishing link.",
-        source: "scam_guardian",
-      },
-    ];
-    actions = [
-      "DO NOT click the link or enter PAN, username, password, or OTPs.",
-      "Banks like SBI NEVER send SMS/Telegram warnings with non-official (.xyz) links.",
-      "Forward the fraudulent message to 1909 or report on https://cybercrime.gov.in.",
-    ];
-  } else if (isCrypto) {
-    scamType = "crypto_giveaway_trap";
-    score = 95;
-    reasons = [
-      {
-        code: "UNREALISTIC_MULTIPLIER",
-        severity: "critical",
-        title: "Impossible Multiplier Return Lure (300% in 20 min)",
-        plain_text: "Promises guaranteed 3X cryptocurrency returns on sending ETH to a smart contract address.",
-        source: "crypto_detector",
-      },
-      {
-        code: "SEED_PHRASE_HARVESTING",
-        severity: "critical",
-        title: "Direct Seed Phrase Theft Threat",
-        plain_text: "Requests 12-word seed phrase or private keys which grants full irreversible access to your assets.",
-        source: "scam_guardian",
-      },
-    ];
-    actions = [
-      "NEVER share your 12-word secret recovery seed phrase with anyone.",
-      "Smart contracts cannot automatically triple sent cryptocurrency.",
-      "Report the malicious channel or bot to Telegram moderators.",
-    ];
   } else if (isViralSocialProof) {
     scamType = "viral_cash_reward_scam";
     score = 94;
@@ -340,6 +291,56 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
       "DO NOT forward this message to WhatsApp groups, family, or friends.",
       "No legitimate platform or company gives away free cash through disposable .buzz links.",
       "Warn the sender that their message is a known viral forwarding trap.",
+    ];
+  } else if (isPhishing) {
+    const phishingTld = urls[0]?.match(/\.([a-z0-9-]+)(?:[\/?#:]|$)/i)?.[1] || "xyz";
+    const brand = textLower.includes("sbi") || textLower.includes("yono") ? "SBI Yono" : textLower.includes("hdfc") ? "HDFC" : "Banking";
+    scamType = "credential_phishing";
+    score = 98;
+    reasons = [
+      {
+        code: "PHISHING_URL",
+        severity: "critical",
+        title: `Deceptive Fake Domain (.${phishingTld})`,
+        plain_text: `Directs to an unverified domain mimicking ${brand} to harvest credentials.`,
+        source: "link_scanner",
+      },
+      {
+        code: "PAN_KYC_PANIC",
+        severity: "critical",
+        title: "Account Deactivation & Seizure Coercion",
+        plain_text: "Threatens immediate account closure and seizure of funds to compel victim to click the phishing link.",
+        source: "scam_guardian",
+      },
+    ];
+    actions = [
+      "DO NOT click the link or enter PAN, username, password, or OTPs.",
+      `Official services like ${brand} NEVER send warnings with non-official (.${phishingTld}) links.`,
+      "Forward the fraudulent message to 1909 or report on https://cybercrime.gov.in.",
+    ];
+  } else if (isCrypto) {
+    scamType = "crypto_giveaway_trap";
+    score = 95;
+    reasons = [
+      {
+        code: "UNREALISTIC_MULTIPLIER",
+        severity: "critical",
+        title: "Impossible Multiplier Return Lure (300% in 20 min)",
+        plain_text: "Promises guaranteed 3X cryptocurrency returns on sending ETH to a smart contract address.",
+        source: "crypto_detector",
+      },
+      {
+        code: "SEED_PHRASE_HARVESTING",
+        severity: "critical",
+        title: "Direct Seed Phrase Theft Threat",
+        plain_text: "Requests 12-word seed phrase or private keys which grants full irreversible access to your assets.",
+        source: "scam_guardian",
+      },
+    ];
+    actions = [
+      "NEVER share your 12-word secret recovery seed phrase with anyone.",
+      "Smart contracts cannot automatically triple sent cryptocurrency.",
+      "Report the malicious channel or bot to Telegram moderators.",
     ];
   } else if (isTelegramTrap) {
     scamType = "telegram_impersonation_bot";

@@ -131,11 +131,45 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
       const isPuny = targetLower.includes("xn--");
       const isIp = /https?:\/\/(?:192\.168|10\.|127\.|172\.)/.test(targetLower);
       const isHighRiskTld = /\.(?:buzz|top|xyz|click|vip|fit|rest|cam|sbs|icu|lat|cfd|cc|tk|ml|ga|cf|gq|work|online|fun|live|link|surf|pw)(?:[\/?#:]|$)/i.test(targetLower);
-      const isTrap = isHighRiskTld || targetLower.includes("airdrop") || targetLower.includes("top") || targetLower.includes(".xyz") || targetLower.includes("kyc") || targetLower.includes("s=wa") || targetLower.includes("bonus") || targetLower.includes("claim") || targetLower.includes("lottery");
+      const isTelegramTrap =
+        (targetLower.includes("t.me") || targetLower.includes("telegram")) &&
+        (targetLower.includes("bot") ||
+          targetLower.includes("verification") ||
+          targetLower.includes("verify") ||
+          targetLower.includes("support") ||
+          targetLower.includes("session") ||
+          targetLower.includes("auth") ||
+          targetLower.includes("airdrop") ||
+          targetLower.includes("claim") ||
+          targetLower.includes("crypto") ||
+          targetLower.includes("pump"));
+      const isTrap =
+        isHighRiskTld ||
+        isTelegramTrap ||
+        targetLower.includes("airdrop") ||
+        targetLower.includes("top") ||
+        targetLower.includes(".xyz") ||
+        targetLower.includes("kyc") ||
+        targetLower.includes("s=wa") ||
+        targetLower.includes("bonus") ||
+        targetLower.includes("claim") ||
+        targetLower.includes("lottery");
       const isLegit = !isTrap && (targetLower.includes("google.com") || targetLower.includes("github.com") || targetLower.includes("gov.in") || targetLower.includes("wikipedia.org"));
 
-      const matchedTld = targetLower.match(/\.([a-z0-9-]+)(?:[\/?#:]|$)/i)?.[1] || "buzz";
-      const riskScore = isLegit ? 4 : isPuny ? 95 : isIp ? 90 : isHighRiskTld ? 94 : isTrap ? 96 : 45;
+      const matchedTld = targetLower.match(/\.([a-z0-9-]+)(?:[\/?#:]|$)/i)?.[1] || (isTelegramTrap ? "me" : "buzz");
+      const riskScore = isLegit
+        ? 4
+        : isPuny
+        ? 95
+        : isIp
+        ? 90
+        : isTelegramTrap
+        ? 94
+        : isHighRiskTld
+        ? 94
+        : isTrap
+        ? 96
+        : 45;
       const fallbackResult: RealtimeScanResult = {
         url: target,
         final_url: target,
@@ -146,21 +180,45 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
           ? "punycode_homoglyph"
           : isIp
           ? "ssrf_private_ip"
+          : isTelegramTrap
+          ? "telegram_bot_phish_shield"
           : isHighRiskTld
           ? "high_risk_disposable_tld"
           : isTrap
           ? "heuristic_phish"
           : "domain_reputation",
-        detection_methods_used: ["disposable_tld_heuristics", "entropy_analysis", "threat_feed_guard"],
+        detection_methods_used: isTelegramTrap
+          ? ["telegram_bot_radar", "impersonation_heuristics", "entropy_analysis"]
+          : ["disposable_tld_heuristics", "entropy_analysis", "threat_feed_guard"],
         reasons: isLegit
           ? [{ code: "CLEAN_DOMAIN", title: "Legitimate Verified Domain", description: "No deceptive homoglyphs, high-risk TLDs, or phishing redirects found.", severity: "safe" }]
           : [
+              ...(isTelegramTrap
+                ? [
+                    {
+                      code: "TELEGRAM_IMPERSONATION_BOT",
+                      title: "Telegram Verification & Session Hijack Bot",
+                      description: "Mimics official Telegram verification / support infrastructure to trick victims into entering phone numbers or login authorization codes.",
+                      severity: "critical",
+                    },
+                  ]
+                : []),
               {
-                code: isPuny ? "HOMOGLYPH_SPOOF" : isIp ? "PRIVATE_IP_SSRF" : isHighRiskTld ? "DISPOSABLE_PHISHING_TLD" : "PHISHING_DOMAIN",
+                code: isPuny
+                  ? "HOMOGLYPH_SPOOF"
+                  : isIp
+                  ? "PRIVATE_IP_SSRF"
+                  : isTelegramTrap
+                  ? "UNVERIFIED_THIRD_PARTY_BOT"
+                  : isHighRiskTld
+                  ? "DISPOSABLE_PHISHING_TLD"
+                  : "PHISHING_DOMAIN",
                 title: isPuny
                   ? "Punycode Homoglyph Detected"
                   : isIp
                   ? "Private RFC 1918 Subnet Probe"
+                  : isTelegramTrap
+                  ? "Unverified Deceptive Bot Link"
                   : isHighRiskTld
                   ? `Disposable High-Risk Domain (.${matchedTld})`
                   : "High-Risk Deceptive Domain",
@@ -168,6 +226,8 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
                   ? "Uses non-ASCII characters to spoof a legitimate brand."
                   : isIp
                   ? "Resolves to an internal network address."
+                  : isTelegramTrap
+                  ? "Official Telegram verification never prompts through third-party bot handles. This is a known credential-theft tactic."
                   : isHighRiskTld
                   ? `Hosted on a disposable top-level domain (.${matchedTld}) heavily utilized for automated credential theft, phishing campaigns, and malware.`
                   : "Matches known credential harvesting and airdrop phishing patterns.",
@@ -192,8 +252,8 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
           ip_address: isIp ? "192.168.1.1" : null,
           entropy: 3.82,
           tld: matchedTld,
-          matched_keywords: isHighRiskTld ? [matchedTld, "viral_referral"] : isTrap ? ["airdrop", "claim"] : [],
-          matched_brands: isPuny ? ["Apple"] : [],
+          matched_keywords: isTelegramTrap ? ["telegram", "verificationbot"] : isHighRiskTld ? [matchedTld, "viral_referral"] : isTrap ? ["airdrop", "claim"] : [],
+          matched_brands: isTelegramTrap ? ["Telegram"] : isPuny ? ["Apple"] : [],
           threat_feed_source: "Intelligent Neural Rules Engine (Offline-Safe)",
         },
         latency_ms: 18,
@@ -332,7 +392,7 @@ export function RealtimeLinkScanner({ initialUrl = "", onScanComplete }: Realtim
       </form>
 
       {/* Error state */}
-      {error && (
+      {error && !result && (
         <div className="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{error}</span>

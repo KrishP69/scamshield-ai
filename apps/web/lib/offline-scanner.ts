@@ -119,6 +119,17 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
     (textLower.includes("s=wa") && (textLower.includes("http://") || textLower.includes("https://"))) ||
     (textLower.includes("₹") && (textLower.includes("milale") || textLower.includes("mile") || textLower.includes("free") || textLower.includes("win")));
 
+  const isTelegramTrap =
+    (textLower.includes("t.me") || textLower.includes("telegram")) &&
+    (textLower.includes("bot") ||
+      textLower.includes("verification") ||
+      textLower.includes("verify") ||
+      textLower.includes("session") ||
+      textLower.includes("auth") ||
+      textLower.includes("security") ||
+      textLower.includes("terminated") ||
+      textLower.includes("spam report"));
+
   const isSafe =
     !isMarketplace &&
     !isCrypto &&
@@ -126,6 +137,7 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
     !isJobTask &&
     !isDigitalArrest &&
     !isViralSocialProof &&
+    !isTelegramTrap &&
     (textLower.includes("bicycle") ||
       textLower.includes("dinner") ||
       textLower.includes("in person") ||
@@ -328,6 +340,31 @@ export function generateFallbackPassport(text: string, platform: string = "faceb
       "DO NOT forward this message to WhatsApp groups, family, or friends.",
       "Warn the sender that their WhatsApp or device may be forwarding automated scam links.",
       "Delete the message and block the sender.",
+    ];
+  } else if (isTelegramTrap) {
+    scamType = "telegram_impersonation_bot";
+    score = 95;
+    reasons = [
+      {
+        code: "TELEGRAM_IMPERSONATION_BOT",
+        severity: "critical",
+        title: "Telegram Verification & Session Hijack Bot",
+        plain_text: "Mimics official Telegram verification / support infrastructure to trick victims into entering phone numbers or login authorization codes.",
+        source: "telegram_bot_radar",
+      },
+      {
+        code: "UNVERIFIED_THIRD_PARTY_BOT",
+        severity: "critical",
+        title: "Unverified Bot Link (t.me)",
+        plain_text: "Official Telegram security alerts NEVER prompt identity verification through third-party bot handles. This is an active credential-theft tactic.",
+        source: "heuristics",
+      },
+    ];
+    actions = [
+      "DO NOT start or send your phone number or OTP to this bot.",
+      "Official Telegram service alerts come only from the verified blue-badged 'Telegram' system notification account.",
+      "Check your Active Sessions under Telegram Settings > Devices immediately.",
+      "Block and report this bot handle to abuse@telegram.org.",
     ];
   } else {
     scamType = "social_engineering_threat";

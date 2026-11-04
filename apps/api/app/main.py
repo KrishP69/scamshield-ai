@@ -27,13 +27,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS configuration
-allow_creds = "*" not in settings.ALLOWED_ORIGINS
+# CORS configuration - permissive for public threat intelligence & frontend deployment flexibility
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=allow_creds,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
